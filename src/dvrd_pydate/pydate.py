@@ -1,6 +1,6 @@
 from calendar import monthrange
 from datetime import date, timedelta
-from typing import Self
+from typing import Self, Generator
 
 from dvrd_pydate.enums import ModifyKey
 
@@ -9,13 +9,31 @@ months_in_year = 12
 
 
 class PYDate(date):
-    @classmethod
-    def from_value(cls, value: date | str = None):
+    @staticmethod
+    def from_value(value: date | str = None):
         if isinstance(value, str):
             value = date.fromisoformat(value)
         elif value is None:
             value = date.today()
         return PYDate(value.year, value.month, value.day)
+
+    @staticmethod
+    def iter(*, start: date | str, end: date | str | None = None,
+             step: ModifyKey | tuple[int, ModifyKey] = ModifyKey.DAY) -> Generator["PYDate", None, None]:
+        current = PYDate.from_value(start)
+        end_value = None if end is None else PYDate.from_value(end)
+        if isinstance(step, tuple):
+            step_value = step[0]
+            step_key = step[1]
+        else:
+            if step not in (ModifyKey.DAYS, ModifyKey.DAY, ModifyKey.MONTHS, ModifyKey.MONTH, ModifyKey.YEAR,
+                            ModifyKey.YEARS):
+                raise KeyError(f'Invalid step key for PYDate: {step}')
+            step_value = 1
+            step_key = step
+        while end_value is None or current < end_value:
+            yield current
+            current = current.add(value=step_value, key=step_key)
 
     def add(self, *, value: int, key: ModifyKey) -> Self:
         if key in [ModifyKey.YEAR, ModifyKey.YEARS]:
@@ -55,7 +73,9 @@ class PYDate(date):
 
     def add_months(self, value: int) -> Self:
         new_date = self.clone()
-        add_years, month_value = divmod(new_date.month + value, months_in_year)
+        add_years, month_value = divmod(new_date.month + value, months_in_year + 1)
+        if add_years:
+            month_value += 1
         year = new_date.year + add_years
         max_date = monthrange(year, month_value)[1]
         return new_date.replace(year=new_date.year + add_years, month=month_value, day=min(max_date, new_date.day))

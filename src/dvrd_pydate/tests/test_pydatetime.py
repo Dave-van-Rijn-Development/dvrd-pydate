@@ -99,6 +99,35 @@ class TestPYDateTime(unittest.TestCase):
         self.assertEqual(clone, self.py_datetime)
         self.assertIsNot(clone, self.py_datetime)
 
+    def test_iter(self):
+        start = datetime(2024, 1, 1, 0, 0, 0, 0)
+        end = datetime(2024, 1, 31, 0, 0, 0, 0)
+        expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
+        for value in PYDateTime.iter(start=start, end=end):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(days=1)
+
+        start = datetime(2024, 1, 1, 0, 0, 0, 0)
+        end = datetime(2024, 1, 31, 0, 0, 0, 0)
+        expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
+        for value in PYDateTime.iter(start=start, end=end, step=(2, ModifyKey.DAYS)):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(days=2)
+
+        start = datetime(2024, 1, 1, 0, 0, 0, 0)
+        end = datetime(2024, 1, 31, 0, 0, 0, 0)
+        expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
+        for value in PYDateTime.iter(start=start, end=end, step=(1, ModifyKey.HOUR)):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(hours=1)
+
+        start = datetime(2024, 1, 1, 0, 0, 0, 0)
+        end = datetime(2024, 1, 31, 0, 0, 0, 0)
+        expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
+        for value in PYDateTime.iter(start=start, end=end, step=(2, ModifyKey.MINUTE)):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(minutes=2)
+
 
 if __name__ == '__main__':
     unittest.main()

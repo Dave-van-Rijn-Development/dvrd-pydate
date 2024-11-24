@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 from dvrd_pydate.enums import ModifyKey
 from dvrd_pydate.pydate import PYDate
@@ -128,6 +128,42 @@ class TestPYDate(unittest.TestCase):
         cloned = self.test_date.clone()
         self.assertEqual(cloned, self.test_date)
         self.assertIsNot(cloned, self.test_date)
+
+    def test_iter(self):
+        # Default iter
+        start = date(2024, 1, 1)
+        end = date(2024, 1, 31)
+        expect_date = date(2024, 1, 1)
+        for value in PYDate.iter(start=start, end=end):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(days=1)
+
+        # 2-days interval
+        start = date(2024, 1, 1)
+        end = date(2024, 1, 31)
+        expect_date = date(2024, 1, 1)
+        for value in PYDate.iter(start=start, end=end, step=(2, ModifyKey.DAYS)):
+            self.assertEqual(expect_date, value)
+            expect_date += timedelta(days=2)
+
+        # 1-month interval
+        start = date(2024, 1, 1)
+        end = date(2025, 7, 31)
+        expect_date = date(2024, 1, 1)
+        last_value = None
+        for value in PYDate.iter(start=start, end=end, step=ModifyKey.MONTH):
+            self.assertEqual(expect_date, value)
+            next_month = expect_date.month + 1
+            add_year, month_value = divmod(next_month, 13)
+            if add_year:
+                month_value += 1
+            expect_date = expect_date.replace(year=expect_date.year + add_year, month=month_value)
+            last_value = value
+        self.assertLess(last_value, end)
+
+        # Invalid interval
+        self.assertRaises(KeyError,
+                          lambda: next(PYDate.iter(start=PYDate.today(), end=PYDate.today(), step=ModifyKey.HOURS)))
 
 
 if __name__ == '__main__':

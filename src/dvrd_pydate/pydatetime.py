@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from typing import Self
+from datetime import datetime, timedelta, date
+from typing import Self, Generator
 
 from dvrd_pydate.enums import ModifyKey
 from dvrd_pydate.pydate import PYDate
@@ -11,8 +11,8 @@ microseconds_in_second = 1000
 
 
 class PYDateTime(datetime, PYDate):
-    @classmethod
-    def from_value(cls, value: datetime | str = None):
+    @staticmethod
+    def from_value(value: datetime | str = None):
         if isinstance(value, str):
             value = datetime.fromisoformat(value)
         elif value is None:
@@ -20,9 +20,24 @@ class PYDateTime(datetime, PYDate):
         return PYDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second,
                           value.microsecond, value.tzinfo, fold=value.fold)
 
+    @staticmethod
+    def iter(*, start: date | str, end: date | str | None = None,
+             step: ModifyKey | tuple[int, ModifyKey] = ModifyKey.DAY) -> Generator["PYDateTime", None, None]:
+        current = PYDateTime.from_value(start)
+        end_value = None if end is None else PYDateTime.from_value(end)
+        if isinstance(step, tuple):
+            step_value = step[0]
+            step_key = step[1]
+        else:
+            step_value = 1
+            step_key = step
+        while end_value is None or current < end_value:
+            yield current
+            current = current.add(value=step_value, key=step_key)
+
     def add(self, *, value: int, key: ModifyKey) -> Self:
         try:
-            super().add(value=value, key=key)
+            return super().add(value=value, key=key)
         except KeyError:
             if key in [ModifyKey.HOUR, ModifyKey.HOURS]:
                 return self.add_hours(value)
