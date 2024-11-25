@@ -1,75 +1,171 @@
 # dvrd_pydate
 
-Python `date` and `datetime` extensions, adding useful init and mutation functions.
+This package provides `date` and `datetime` extensions with useful extra utility functions.
+The extensions are provided as the `PyDate(date)` and `PyDateTime(datetime, PyDate)` classes. All built-in `date` and
+`datetime` functions are still available through inheritance.
 
-## Example
+## Initialization
+
+### from_value
+
+`PyDate` and `PyDateTime` objects can be constructed using the default `date`/`datetime` constructors or initializing
+functions. They can also easily be constructed from existing `date`/`datetime` objects or their `Py*` variants, using
+the staticmethod `from_value`.
 
 ```python
-from datetime import date
-from dvrd_pydate import PYDate, DatePart
+from datetime import datetime, date
+from dvrd_pydate import PyDate, PyDateTime
 
-# Default date functions are still available
-today = PYDate.today()
+date_value = date(2024, 1, 1)
+datetime_value = datetime(2024, 1, 1, 12, 0, 0, 0)
 
-# Create date from string or existing date
-date_value = PYDate.from_value('2024-01-01')
-date_value = PYDate.from_value(date(2024, 1, 1))
+# All valid initializers
+pydate_value = PyDate(2024, 1, 1)
+pydate_value = PyDate.fromisoformat('2024-01-01')
+pydate_value = PyDate.from_value(date_value)
+pydate_value = PyDate(pydate_value)
 
-# Mutation functions are available for all properties
-date_value = date_value.add(value=3, key=DatePart.DAYS)  # 2024-01-04
-date_value = date_value.subtract(value=1, key=DatePart.YEAR)  # 2023-01-04
-
-# Simplified functions are available for mutations with value 1
-date_value = date_value.add_year()  # 2024-01-04
-date_value = date_value.subtract_month()  # 2023-12-04
+pydatetime_value = PyDateTime(2024, 1, 1, 12, 0, 0, 0)
+pydatetime_value = PyDateTime.fromisoformat('2024-01-01:12:00:00.000')
+pydatetime_value = PyDateTime.from_value(datetime_value)
+pydatetime_value = PyDateTime.from_value(pydatetime_value)
 ```
 
-### PYDate
+| **Argument** | Type          | Required | Default | **Description**                                                                                                                   |
+|--------------|---------------|----------|---------|-----------------------------------------------------------------------------------------------------------------------------------|
+| value        | `date \| str` | No       | `None`  | Construct a new PyDate(Time) object from the given value. If value is `None`, `date.today()` or `datetime.now()` is used instead. |
 
-Python `date` extension.
+### clone
 
-| **Function**      | Arguments                      | **Description**                                                                                                                     |
-|-------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `add`             | `value: int`, `key: ModifyKey` | Adds the `value` in `key` to the current value. Raises a `KeyError` when an unsupported key is supplied (like ModifyKey.HOUR).      |
-| `subtract`        | `value: int`, `key: ModifyKey` | Subtracts the `value` in `key` to the current value. Raises a `KeyError` when an unsupported key is supplied (like ModifyKey.HOUR). |
-| `add_years`       | `value: int`                   | Add `value` years to the current value.                                                                                             |
-| `add_year`        | N/A                            | Add 1 year to the current value.                                                                                                    |
-| `subtract_years`  | `value: int`                   | Subtract `value` years from the current value.                                                                                      |
-| `subtract_year`   | N/A                            | Subtract 1 year from the current value.                                                                                             |
-| `add_months`      | `value: int`                   | Add `value` months to the current value.                                                                                            |
-| `add_month`       | N/A                            | Add 1 month to the current value.                                                                                                   |
-| `subtract_months` | `value: int`                   | Subtract `value` months from the current value.                                                                                     |
-| `subtract_month`  | N/A                            | Subtract 1 month from the current value.                                                                                            |
-| `add_weeks`       | `value: int`                   | Add `value` weeks to the current value.                                                                                             |
-| `add_week`        | N/A                            | Add 1 week to the current value.                                                                                                    |
-| `subtract_weeks`  | `value: int`                   | Subtract `value` weeks from the current value.                                                                                      |
-| `subtract_week`   | N/A                            | Subtract 1 week from the current value.                                                                                             |
-| `add_days`        | `value: int`                   | Add `value` days to the current value.                                                                                              |
-| `add_day`         | N/A                            | Add 1 day to the current value.                                                                                                     |
-| `subtract_days`   | `value: int`                   | Subtract `value` days from the current value.                                                                                       |
-| `subtract_day`    | N/A                            | Subtract 1 day from the current value.                                                                                              |
-| `clone`           | N/A                            | Returns a new `PYDate` object with the current value.                                                                               |
+Both classes provide a `clone` function, which simply clones the object into a new one. This function takes no
+arguments.
 
-### PYDateTime
+## Iteration
 
-Python `datetime` extension. Inherits all functions from `PYDate`, but extends the `add`, `subtract`, `start_of`,
-`end_of` support to the time parts.
+Both classes provide a staticmethod `iter` which returns a generator. The generator generates PyDate(Time)s with given
+interval. It is possible to supply a start date, end date and max amounts of steps to take. If both `end` and
+`max_steps` are given, the generator stops at whichever argument is reached first.
 
-| **Function**            | Arguments    | **Description**                                       |
-|-------------------------|--------------|-------------------------------------------------------|
-| `add_hours`             | `value: int` | Add `value` hours to the current value.               |
-| `add_hour`              | N/A          | Add 1 hour to the current value.                      |
-| `subtract_hours`        | `value: int` | Subtract `value` hours from the current value.        |
-| `subtract_hour`         | N/A          | Subtract 1 hour from the current value.               |
-| `add_minutes`           | `value: int` | Add `value` minutes to the current value.             |
-| `add_minute`            | N/A          | Add 1 minute to the current value.                    |
-| `subtract_minutes`      | `value: int` | Subtract `value` minutes from the current value.      |
-| `subtract_minute`       | N/A          | Subtract 1 minute from the current value.             |
-| `add_seconds`           | `value: int` | Add `value` seconds to the current value.             |
-| `add_second`            | N/A          | Add 1 second to the current value.                    |
-| `subtract_seconds`      | `value: int` | Subtract `value` seconds from the current value.      |
-| `subtract_second`       | N/A          | Subtract 1 second from the current value.             |
-| `add_microseconds`      | `value: int` | Add `value` microseconds to the current value.        |
-| `add_microsecond`       | N/A          | Add 1 microsecond to the current value.               |
-| `subtract_microseconds` | `value: int` | Subtract `value` microseconds from the current value. |
-| `subtract_microsecond`  | N/A          | Subtract 1 microsecond from the current value.        |
+```python
+from dvrd_pydate import PyDate, DatePart
+
+for date_value in PyDate.iter(end=PyDate.now().add(7, DatePart.DAYS)):
+    pass
+for date_value in PyDate.iter(max_steps=7):
+    # Does the same as the loop above
+    pass
+```
+
+| **Argument** | Type                                                       | Required | Default        | **Description**                                                                                                                             |
+|--------------|------------------------------------------------------------|----------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| start        | `date \| str`                                              | No       | `None`         | Start iterating from date(time). If `None`, uses date.today()` or `datetime.now()`                                                          |
+| end          | `date \| str`                                              | No       | `None`         | Optional date(time) to end the iteration at.                                                                                                |
+| step         | `DatePart \| TimePart \| tuple[int, DatePart \| TimePart]` | No       | `DatePart.DAY` | Interval to determine each new date(time) with. `PyDate` can only use `DatePart`, while `PyDateTime` can use both `DatePart` as `TimePart`. |
+| max_steps    | `int`                                                      | No       | None           | Max amount of date(time)s to generate.                                                                                                      |
+
+## Mutations
+
+Both classes provide functions to alter the date or time. All functions return a new instance, mutations are not done
+in-place. All functions can therefore also be chained together.
+
+### Add
+
+Add an amount of date/time part. `PyDate` only supports `DatePart` parts, while `PyDateTime` supports both `DatePart` (
+through inheritance) and `TimePart`.
+
+```python
+from dvrd_pydate import PyDate, PyDateTime, DatePart, TimePart
+
+date_value = PyDate.today()
+date_value = date_value.add(7, DatePart.DAYS)
+date_value = date_value.add(1, DatePart.WEEK)  # Same as above
+
+datetime_value = PyDateTime.now()
+datetime_value = datetime_value.add(1, DatePart.MONTH).add(30, TimePart.SECONDS)
+```
+
+| **Argument** | Type                   | Required | Default | **Description**                            |
+|--------------|------------------------|----------|---------|--------------------------------------------|
+| value        | `int`                  | Yes      | N/A     | The value to add to the current date(time) |
+| key          | `DatePart \| TimePart` | Yes      | N/A     | The part to add the value to               |
+
+### Subtract
+
+Subtract an amount of date/time part. `PyDate` only supports `DatePart` parts, while `PyDateTime` supports both
+`DatePart` (through inheritance) and `TimePart`.
+
+```python
+from dvrd_pydate import PyDate, PyDateTime, DatePart, TimePart
+
+date_value = PyDate.today()
+date_value = date_value.subtract(7, DatePart.DAYS)
+date_value = date_value.subtract(1, DatePart.WEEK)  # Does the same as above
+
+datetime_value = PyDateTime.now()
+datetime_value = datetime_value.subtract(1, DatePart.MONTH).subtract(30, TimePart.SECONDS)
+```
+
+#### Add/Subtract parts
+
+Each part also has its own `add` and `subtract` function. E.g. `add_days(2)`, `add_hours(3)`, `subtract_months(4)`, etc.
+Adding or subtracting with value `1` can also be achieved by using the utility functions `add_day()`, `add_hour()`,
+`subtract_month()`, etc. which calls the `add`/`subtract` functions with value `1`.
+
+## start_of / end_of
+
+Both classes provide the `start_of` and `end_of` functions to conveniently set the date(time) to the start of the given
+date/time part.
+
+```python
+from dvrd_pydate import PyDate, DatePart
+
+date_value = PyDate(2024, 2, 5)  # 5th of February 2024
+start_of_month = date_value.start_of(DatePart.MONTH)  # 1st of February 2024
+end_of_month = date_value.end_of(DatePart.MONTH)  # 29th of February 2024
+```
+
+| **Argument** | Type                   | Required | Default | Description                                           |
+|--------------|------------------------|----------|---------|-------------------------------------------------------|
+| part         | `DatePart \| TimePart` | Yes      | N/A     | Determines to which part the date(time) is mutated to |
+
+## Comparison
+
+Both classes provide convenient function to compare itself to another date(time). The following functions can be used:
+
+- `is_before`
+- `is_same_or_before`
+- `is_same`
+- `is_same_or_after`
+- `is_after`
+- `is_between`
+
+```python
+from dvrd_pydate import PyDate, DatePart
+
+date1 = PyDate(2024, 1, 1)
+date2 = PyDate(2024, 1, 15)
+
+date1.is_same(date2)  # Granularity defaults to DatePart.DAY, returns False
+date1.is_same(date2, DatePart.MONTH)  # True
+```
+
+All function return a `bool`. All functions except `is_between` take the following arguments:
+
+| **Argument** | Type                   | Required | Default        | Description                                                                                                                              |
+|--------------|------------------------|----------|----------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| other        | `date(time) \| str`    | Yes      | N/A            | Date(time) to compare to. Can also be a ISO date(time) string                                                                            |
+| granularity  | `DatePart \| TimePart` | No       | `DatePart.DAY` | Determines the exactness of the comparison. For example, this makes it easy to test if two dates are in the same month of the same year. |
+
+The `is_between` function tests if the object is in between given date(time)s. It is possible to exclude the given start
+and end date.
+
+```python
+from dvrd_pydate import PyDate, DatePart
+date1 = PyDate(2024, 1, 1)
+date2 = PyDate(2024, 1, 15)
+date3 = PyDate(2024, 1, 12)
+
+date3.is_between(date1, date2)  # True
+date2.is_between(date1, date2)  # True
+date2.is_between(date1, date2, to_inclusive=False)  # False
+```

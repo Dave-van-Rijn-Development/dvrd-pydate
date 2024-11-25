@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, date
 from typing import Self, Generator
 
 from dvrd_pydate.enums import DatePart, TimePart
-from dvrd_pydate.pydate import PYDate
+from dvrd_pydate.pydate import PyDate
 
 hours_in_day = 24
 minutes_in_hour = 60
@@ -10,24 +10,24 @@ seconds_in_minute = 60
 microseconds_in_second = 1000
 
 
-class PYDateTime(datetime, PYDate):
+class PyDateTime(datetime, PyDate):
     @staticmethod
     def from_value(value: datetime | str = None):
         if isinstance(value, str):
             value = datetime.fromisoformat(value)
         elif value is None:
             value = datetime.now()
-        return PYDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second,
+        return PyDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second,
                           value.microsecond, value.tzinfo, fold=value.fold)
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
              step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY) -> \
-            Generator["PYDateTime", None, None]:
+            Generator["PyDateTime", None, None]:
         if start is None:
             start = datetime.now()
-        current = PYDateTime.from_value(start)
-        end_value = None if end is None else PYDateTime.from_value(end)
+        current = PyDateTime.from_value(start)
+        end_value = None if end is None else PyDateTime.from_value(end)
         if isinstance(step, tuple):
             step_value = step[0]
             step_key = step[1]
@@ -38,7 +38,7 @@ class PYDateTime(datetime, PYDate):
             yield current
             current = current.add(value=step_value, key=step_key)
 
-    def add(self, *, value: int, key: DatePart | TimePart) -> Self:
+    def add(self, value: int, key: DatePart | TimePart) -> Self:
         if isinstance(key, DatePart):
             return super().add(value=value, key=key)
         elif key in [TimePart.HOUR, TimePart.HOURS]:
@@ -50,9 +50,9 @@ class PYDateTime(datetime, PYDate):
         elif key in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
             return self.add_microseconds(value)
         else:
-            raise KeyError(f'Key "{key}" cannot be used in PYDateTime')
+            raise KeyError(f'Key "{key}" cannot be used in PyDateTime')
 
-    def subtract(self, *, value: int, key: DatePart | TimePart) -> Self:
+    def subtract(self, value: int, key: DatePart | TimePart) -> Self:
         if isinstance(key, DatePart):
             return super().subtract(value=value, key=key)
         elif key in [TimePart.HOUR, TimePart.HOURS]:
@@ -64,7 +64,7 @@ class PYDateTime(datetime, PYDate):
         elif key in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
             return self.subtract_microseconds(value)
         else:
-            raise KeyError(f'Key "{key}" cannot be used in PYDateTime')
+            raise KeyError(f'Key "{key}" cannot be used in PyDateTime')
 
     def add_hours(self, value: int) -> Self:
         return self + timedelta(hours=value)

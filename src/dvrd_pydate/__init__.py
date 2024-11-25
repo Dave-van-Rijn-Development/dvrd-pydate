@@ -1,3 +1,3 @@
-from .pydate import PYDate
-from .pydatetime import PYDateTime
+from .pydate import PyDate
+from .pydatetime import PyDateTime
 from .enums import DatePart, TimePart

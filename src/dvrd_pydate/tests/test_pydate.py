@@ -3,40 +3,40 @@ from calendar import monthrange
 from datetime import date, timedelta
 
 from dvrd_pydate.enums import DatePart, TimePart
-from dvrd_pydate.pydate import PYDate
+from dvrd_pydate.pydate import PyDate
 
 
-class TestPYDate(unittest.TestCase):
+class TestPyDate(unittest.TestCase):
     def setUp(self):
-        self.test_date = PYDate(2023, 1, 15)
+        self.test_date = PyDate(2023, 1, 15)
 
     def test_constructors(self):
-        self.assertEqual(PYDate.from_value("2023-01-15"), date(2023, 1, 15))
-        self.assertEqual(PYDate.from_value(), date.today())
+        self.assertEqual(PyDate.from_value("2023-01-15"), date(2023, 1, 15))
+        self.assertEqual(PyDate.from_value(), date.today())
 
     def test_add_operations(self):
-        test_date = PYDate(2023, 1, 15)
+        test_date = PyDate(2023, 1, 15)
 
         # Test adding years
-        date_copy = PYDate.from_value(test_date).add(value=1, key=DatePart.YEAR)
+        date_copy = PyDate.from_value(test_date).add(value=1, key=DatePart.YEAR)
         self.assertEqual(date(2024, 1, 15), date_copy)
 
         # Test adding months
-        date_copy = PYDate.from_value(test_date).add(value=2, key=DatePart.MONTHS)
+        date_copy = PyDate.from_value(test_date).add(value=2, key=DatePart.MONTHS)
         self.assertEqual(date_copy, date(2023, 3, 15))
 
         # Test adding weeks
-        date_copy = PYDate.from_value(test_date).add(value=1, key=DatePart.WEEKS)
+        date_copy = PyDate.from_value(test_date).add(value=1, key=DatePart.WEEKS)
         self.assertEqual(date_copy, date(2023, 1, 22))
 
         # Test adding days
-        date_copy = PYDate.from_value(test_date).add(value=5, key=DatePart.DAYS)
+        date_copy = PyDate.from_value(test_date).add(value=5, key=DatePart.DAYS)
         self.assertEqual(date_copy, date(2023, 1, 20))
 
         self.assertRaises(KeyError, date_copy.add, value=5, key=TimePart.HOURS)
 
     def test_add_overflow_operations(self):
-        test_date = PYDate.from_value('2023-12-31')
+        test_date = PyDate.from_value('2023-12-31')
 
         # Test adding years
         date_copy = test_date.clone().add(value=1, key=DatePart.YEAR)
@@ -53,10 +53,10 @@ class TestPYDate(unittest.TestCase):
         self.assertEqual(date_copy, date(2024, 1, 31))
 
         # Test adding month to less max days
-        date_copy = PYDate.from_value('2023-03-31').add(value=1, key=DatePart.MONTH)
+        date_copy = PyDate.from_value('2023-03-31').add(value=1, key=DatePart.MONTH)
         self.assertEqual(date_copy, date(2023, 4, 30))
 
-        date_copy = PYDate.from_value('2023-03-31').add_month()
+        date_copy = PyDate.from_value('2023-03-31').add_month()
         self.assertEqual(date_copy, date(2023, 4, 30))
 
         # Test adding weeks
@@ -75,43 +75,43 @@ class TestPYDate(unittest.TestCase):
 
     def test_subtract_operations(self):
         # Test subtracting years
-        test_date = PYDate(2023, 1, 15)
+        test_date = PyDate(2023, 1, 15)
 
-        date_copy = PYDate.from_value(test_date).subtract(value=1, key=DatePart.YEAR)
+        date_copy = PyDate.from_value(test_date).subtract(value=1, key=DatePart.YEAR)
         self.assertEqual(date_copy, date(2022, 1, 15))
 
-        date_copy = PYDate.from_value(test_date).subtract_year()
+        date_copy = PyDate.from_value(test_date).subtract_year()
         self.assertEqual(date_copy, date(2022, 1, 15))
 
         # Test subtracting months
-        date_copy = PYDate.from_value(test_date).subtract(value=2, key=DatePart.MONTHS)
+        date_copy = PyDate.from_value(test_date).subtract(value=2, key=DatePart.MONTHS)
         self.assertEqual(date(2022, 11, 15), date_copy)
 
-        date_copy = PYDate.from_value(test_date).subtract_month()
+        date_copy = PyDate.from_value(test_date).subtract_month()
         self.assertEqual(date_copy, date(2022, 12, 15))
 
         # Test subtracting 37 in months
-        date_copy = PYDate.from_value(test_date).subtract(value=37, key=DatePart.MONTHS)
+        date_copy = PyDate.from_value(test_date).subtract(value=37, key=DatePart.MONTHS)
         self.assertEqual(date_copy, date(2019, 12, 15))
 
         # Test subtracting weeks
-        date_copy = PYDate.from_value(test_date).subtract(value=1, key=DatePart.WEEK)
+        date_copy = PyDate.from_value(test_date).subtract(value=1, key=DatePart.WEEK)
         self.assertEqual(date_copy, date(2023, 1, 8))
 
-        date_copy = PYDate.from_value(test_date).subtract_week()
+        date_copy = PyDate.from_value(test_date).subtract_week()
         self.assertEqual(date_copy, date(2023, 1, 8))
 
         # Test subtracting days
-        date_copy = PYDate.from_value(test_date).subtract(value=1, key=DatePart.DAY)
+        date_copy = PyDate.from_value(test_date).subtract(value=1, key=DatePart.DAY)
         self.assertEqual(date(2023, 1, 14), date_copy)
 
-        date_copy = PYDate.from_value(test_date).subtract_day()
+        date_copy = PyDate.from_value(test_date).subtract_day()
         self.assertEqual(date(2023, 1, 14), date_copy)
 
         self.assertRaises(KeyError, date_copy.subtract, value=5, key=TimePart.HOURS)
 
     def test_subtract_overflow_operations(self):
-        test_date = PYDate.from_value('2023-01-31')
+        test_date = PyDate.from_value('2023-01-31')
 
         # Test subtracting years
         date_copy = test_date.clone().subtract(value=1, key=DatePart.YEAR)
@@ -122,7 +122,7 @@ class TestPYDate(unittest.TestCase):
         self.assertEqual(date(2022, 12, 31), date_copy)
 
         # Test subtracting months to less max days
-        date_copy = PYDate.from_value('2023-07-31').subtract(value=1, key=DatePart.MONTH)
+        date_copy = PyDate.from_value('2023-07-31').subtract(value=1, key=DatePart.MONTH)
         self.assertEqual(date(2023, 6, 30), date_copy)
 
     def test_clone(self):
@@ -132,9 +132,9 @@ class TestPYDate(unittest.TestCase):
 
     def test_iter(self):
         # Default iter, with end date
-        end = PYDate.today().add(value=1, key=DatePart.MONTHS)
+        end = PyDate.today().add(value=1, key=DatePart.MONTHS)
         expect_date = date.today()
-        for value in PYDate.iter(end=end):
+        for value in PyDate.iter(end=end):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(days=1)
 
@@ -142,7 +142,7 @@ class TestPYDate(unittest.TestCase):
         start = date(2024, 1, 1)
         end = date(2024, 1, 31)
         expect_date = date(2024, 1, 1)
-        for value in PYDate.iter(start=start, end=end):
+        for value in PyDate.iter(start=start, end=end):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(days=1)
 
@@ -150,7 +150,7 @@ class TestPYDate(unittest.TestCase):
         start = date(2024, 1, 1)
         end = date(2024, 1, 31)
         expect_date = date(2024, 1, 1)
-        for value in PYDate.iter(start=start, end=end, step=(2, DatePart.DAYS)):
+        for value in PyDate.iter(start=start, end=end, step=(2, DatePart.DAYS)):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(days=2)
 
@@ -159,7 +159,7 @@ class TestPYDate(unittest.TestCase):
         end = date(2025, 7, 31)
         expect_date = date(2024, 1, 1)
         last_value = None
-        for value in PYDate.iter(start=start, end=end, step=DatePart.MONTH):
+        for value in PyDate.iter(start=start, end=end, step=DatePart.MONTH):
             self.assertEqual(expect_date, value)
             next_month = expect_date.month + 1
             add_year, month_value = divmod(next_month, 13)
@@ -170,32 +170,32 @@ class TestPYDate(unittest.TestCase):
         self.assertLess(last_value, end)
 
         # Max steps argument
-        result = PYDate.iter(max_steps=5)
+        result = PyDate.iter(max_steps=5)
         self.assertEqual(len(list(result)), 5)
-        self.assertRaises(StopIteration, lambda: next(PYDate.iter(max_steps=0)))
+        self.assertRaises(StopIteration, lambda: next(PyDate.iter(max_steps=0)))
 
         # Max steps + end
-        result = PYDate.iter(end=PYDate.today().add(4, DatePart.DAYS), max_steps=5)
+        result = PyDate.iter(end=PyDate.today().add(4, DatePart.DAYS), max_steps=5)
         self.assertEqual(len(list(result)), 4)
 
-        result = PYDate.iter(end=PYDate.today().add(6, DatePart.DAYS), max_steps=5)
+        result = PyDate.iter(end=PyDate.today().add(6, DatePart.DAYS), max_steps=5)
         self.assertEqual(len(list(result)), 5)
 
         # Invalid interval
         self.assertRaises(KeyError,
-                          lambda: next(PYDate.iter(start=PYDate.today(), end=PYDate.today(), step=TimePart.HOURS)))
+                          lambda: next(PyDate.iter(start=PyDate.today(), end=PyDate.today(), step=TimePart.HOURS)))
         self.assertRaises(KeyError,
-                          lambda: next(PYDate.iter(start=PYDate.today(), end=PYDate.today(), step=(1, TimePart.HOURS))))
+                          lambda: next(PyDate.iter(start=PyDate.today(), end=PyDate.today(), step=(1, TimePart.HOURS))))
 
     def test_start_of(self):
-        test_date = PYDate.today()
+        test_date = PyDate.today()
         start_of = test_date.start_of(DatePart.YEAR)
         self.assertTupleEqual((start_of.month, start_of.day), (1, 1))
 
         start_of = test_date.start_of(DatePart.MONTH)
         self.assertTupleEqual((start_of.month, start_of.day), (date.today().month, 1))
 
-        test_date = PYDate.fromisoformat('2024-11-24')  # Sunday
+        test_date = PyDate.fromisoformat('2024-11-24')  # Sunday
         self.assertEqual(date(2024, 11, 18), test_date.start_of(DatePart.WEEK))
 
         self.assertIs(test_date, test_date.start_of(DatePart.DAY))
@@ -203,7 +203,7 @@ class TestPYDate(unittest.TestCase):
         self.assertRaises(KeyError, test_date.start_of, 'not_a_key')
 
     def test_end_of(self):
-        test_date = PYDate.today()
+        test_date = PyDate.today()
 
         # Year
         end_of = test_date.end_of(DatePart.YEAR)
@@ -216,7 +216,7 @@ class TestPYDate(unittest.TestCase):
         self.assertTupleEqual((end_of.month, end_of.day), (today.month, max_date))
 
         # Week
-        test_date = PYDate.fromisoformat('2024-11-20')  # Wednesday
+        test_date = PyDate.fromisoformat('2024-11-20')  # Wednesday
         end_of = test_date.end_of(DatePart.WEEK)
         self.assertEqual(date(2024, 11, 24), end_of)
 
@@ -228,8 +228,8 @@ class TestPYDate(unittest.TestCase):
         # Full date check
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 11, 25)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
 
         self.assertTrue(date1.is_before(date2))
         self.assertTrue(date1.is_before(date2_value))
@@ -237,7 +237,7 @@ class TestPYDate(unittest.TestCase):
         self.assertFalse(date2.is_before(date1_value))
 
         # Month check
-        date3 = PYDate(2024, 10, 24)
+        date3 = PyDate(2024, 10, 24)
         self.assertFalse(date1.is_before(date2, DatePart.MONTH))
         self.assertFalse(date2.is_before(date1, DatePart.MONTH))
 
@@ -245,7 +245,7 @@ class TestPYDate(unittest.TestCase):
         self.assertTrue(date3.is_before(date2, DatePart.MONTH))
 
         # Year check
-        date4 = PYDate(2023, 11, 24)
+        date4 = PyDate(2023, 11, 24)
         self.assertFalse(date1.is_before(date2, DatePart.YEAR))
         self.assertFalse(date2.is_before(date1, DatePart.YEAR))
         self.assertFalse(date1.is_before(date3, DatePart.YEAR))
@@ -259,8 +259,8 @@ class TestPYDate(unittest.TestCase):
     def test_is_same_or_before(self):
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 11, 25)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
         date3 = date2.clone()
 
         # Full date check
@@ -275,7 +275,7 @@ class TestPYDate(unittest.TestCase):
         self.assertFalse(date3.is_same_or_before(date1))
 
         # Month check
-        date4 = PYDate(2023, 10, 24)
+        date4 = PyDate(2023, 10, 24)
         self.assertTrue(date1.is_same_or_before(date2, DatePart.MONTH))
         self.assertTrue(date2.is_same_or_before(date1, DatePart.MONTH))
         self.assertTrue(date1.is_same_or_before(date3, DatePart.MONTH))
@@ -297,8 +297,8 @@ class TestPYDate(unittest.TestCase):
     def test_is_same(self):
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 11, 25)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
 
         # Full check
         self.assertFalse(date1.is_same(date2))
@@ -320,8 +320,8 @@ class TestPYDate(unittest.TestCase):
     def test_is_same_or_after(self):
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 11, 25)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
 
         # Full check
         self.assertTrue(date1.is_same_or_after(date1.clone()))
@@ -331,7 +331,7 @@ class TestPYDate(unittest.TestCase):
         self.assertFalse(date1.is_same_or_after(date2))
 
         # Year check
-        date3 = PYDate(2023, 11, 25)
+        date3 = PyDate(2023, 11, 25)
         self.assertTrue(date1.is_same_or_after(date2, DatePart.YEAR))
         self.assertTrue(date2.is_same_or_after(date1, DatePart.YEAR))
 
@@ -352,8 +352,8 @@ class TestPYDate(unittest.TestCase):
     def test_is_after(self):
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 11, 25)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
 
         # Full check
         self.assertTrue(date2.is_after(date1))
@@ -363,7 +363,7 @@ class TestPYDate(unittest.TestCase):
         self.assertFalse(date1.is_after(date1.clone()))
 
         # Year
-        date3 = PYDate(2023, 11, 24)
+        date3 = PyDate(2023, 11, 24)
         self.assertTrue(date1.is_after(date3, DatePart.YEAR))
 
         self.assertFalse(date1.is_after(date2, DatePart.YEAR))
@@ -385,9 +385,9 @@ class TestPYDate(unittest.TestCase):
         date1_value = date(2024, 11, 24)
         date2_value = date(2024, 12, 24)
         date3_value = date(2024, 10, 24)
-        date1 = PYDate.from_value(date1_value)
-        date2 = PYDate.from_value(date2_value)
-        date3 = PYDate.from_value(date3_value)
+        date1 = PyDate.from_value(date1_value)
+        date2 = PyDate.from_value(date2_value)
+        date3 = PyDate.from_value(date3_value)
 
         # Intentionally give arguments in reverse order to make sure the determination of the `from_date`
         # and `to_date` works correctly
@@ -406,8 +406,8 @@ class TestPYDate(unittest.TestCase):
         self.assertFalse(date1.is_between(date4, date2, from_inclusive=False))
 
         # Granularity
-        date2 = PYDate(2024, 11, 12)
-        date3 = PYDate(2024, 11, 25)
+        date2 = PyDate(2024, 11, 12)
+        date3 = PyDate(2024, 11, 25)
         self.assertTrue(date1.is_between(date2, date3))
         self.assertTrue(date1.is_between(date3, date2, granularity=DatePart.MONTH))
         self.assertFalse(date1.is_between(date2, date3, granularity=DatePart.MONTH, from_inclusive=False))

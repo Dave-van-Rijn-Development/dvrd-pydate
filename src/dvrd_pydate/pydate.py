@@ -8,27 +8,27 @@ days_in_week = 7
 months_in_year = 12
 
 
-class PYDate(date):
+class PyDate(date):
     @staticmethod
     def from_value(value: date | str = None):
         if isinstance(value, str):
             value = date.fromisoformat(value)
         elif value is None:
             value = date.today()
-        return PYDate(value.year, value.month, value.day)
+        return PyDate(value.year, value.month, value.day)
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
              step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
-            Generator["PYDate", None, None]:
+            Generator["PyDate", None, None]:
         if max_steps == 0:
             # Raises StopIteration
             return
         if isinstance(step, TimePart):
-            raise KeyError('Cannot use time parts in PYDate')
+            raise KeyError('Cannot use time parts in PyDate')
         elif isinstance(step, tuple):
             if isinstance((step_key := step[1]), TimePart):
-                raise KeyError('Cannot use time parts in PYDate')
+                raise KeyError('Cannot use time parts in PyDate')
             step_value = step[0]
         else:
             step_value = 1
@@ -36,8 +36,8 @@ class PYDate(date):
 
         if start is None:
             start = date.today()
-        current = PYDate.from_value(start)
-        end_value = None if end is None else PYDate.from_value(end)
+        current = PyDate.from_value(start)
+        end_value = None if end is None else PyDate.from_value(end)
         current_step = 0
         while end_value is None or current < end_value:
             yield current
@@ -60,9 +60,9 @@ class PYDate(date):
         elif key in [DatePart.DAY, DatePart.DAYS]:
             return self.add_days(value)
         else:
-            raise KeyError(f'Key "{key}" cannot be used in PYDate')
+            raise KeyError(f'Key "{key}" cannot be used in PyDate')
 
-    def subtract(self, *, value: int, key: DatePart) -> Self:
+    def subtract(self, value: int, key: DatePart) -> Self:
         if key in [DatePart.YEAR, DatePart.YEARS]:
             return self.subtract_years(value)
         elif key in [DatePart.MONTH, DatePart.MONTHS]:
@@ -72,7 +72,7 @@ class PYDate(date):
         elif key in [DatePart.DAY, DatePart.DAYS]:
             return self.subtract_days(value)
         else:
-            raise KeyError(f'Key "{key}" cannot be used in PYDate')
+            raise KeyError(f'Key "{key}" cannot be used in PyDate')
 
     def add_years(self, value: int) -> Self:
         return self.replace(year=self.year + value)
@@ -136,12 +136,12 @@ class PYDate(date):
     def subtract_day(self) -> Self:
         return self.subtract_days(1)
 
-    def clone(self) -> "PYDate":
+    def clone(self) -> "PyDate":
         return type(self).from_value(self)
 
     def start_of(self, part: DatePart | TimePart) -> Self:
         if isinstance(part, TimePart):
-            raise KeyError('Time part cannot be used in PYDate')
+            raise KeyError('Time part cannot be used in PyDate')
         if part in [DatePart.YEAR, DatePart.YEARS]:
             return self.replace(month=1, day=1)
         elif part in [DatePart.MONTH, DatePart.MONTHS]:
@@ -156,7 +156,7 @@ class PYDate(date):
 
     def end_of(self, part: DatePart | TimePart) -> Self:
         if isinstance(part, TimePart):
-            raise KeyError('Time part cannot be used in PYDate')
+            raise KeyError('Time part cannot be used in PyDate')
         if part in [DatePart.YEAR, DatePart.YEARS]:
             return self.replace(month=12, day=31)
         elif part in [DatePart.MONTH, DatePart.MONTHS]:
@@ -169,37 +169,37 @@ class PYDate(date):
         else:
             raise KeyError(f'Unsupported end_of part {part}')
 
-    def is_before(self, other: date, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
-        if not isinstance(other, PYDate):
-            other = PYDate.from_value(other)
+    def is_before(self, other: date | str, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
+        if not isinstance(other, PyDate):
+            other = PyDate.from_value(other)
         return self.start_of(granularity) < other.start_of(granularity)
 
-    def is_same_or_before(self, other: date, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
-        if not isinstance(other, PYDate):
-            other = PYDate.from_value(other)
+    def is_same_or_before(self, other: date | str, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
+        if not isinstance(other, PyDate):
+            other = PyDate.from_value(other)
         return self.start_of(granularity) <= other.start_of(granularity)
 
-    def is_same(self, other: date, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
-        if not isinstance(other, PYDate):
-            other = PYDate.from_value(other)
+    def is_same(self, other: date | str, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
+        if not isinstance(other, PyDate):
+            other = PyDate.from_value(other)
         return self.start_of(granularity) == other.start_of(granularity)
 
-    def is_same_or_after(self, other: date, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
-        if not isinstance(other, PYDate):
-            other = PYDate.from_value(other)
+    def is_same_or_after(self, other: date | str, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
+        if not isinstance(other, PyDate):
+            other = PyDate.from_value(other)
         return self.start_of(granularity) >= other.start_of(granularity)
 
-    def is_after(self, other: date, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
-        if not isinstance(other, PYDate):
-            other = PYDate.from_value(other)
+    def is_after(self, other: date | str, granularity: DatePart | TimePart = DatePart.DAY) -> bool:
+        if not isinstance(other, PyDate):
+            other = PyDate.from_value(other)
         return self.start_of(granularity) > other.start_of(granularity)
 
-    def is_between(self, other1: date, other2: date, *, granularity: DatePart = DatePart.DAY,
+    def is_between(self, other1: date | str, other2: date | str, *, granularity: DatePart = DatePart.DAY,
                    from_inclusive: bool = True, to_inclusive: bool = True) -> bool:
-        if not isinstance(other1, PYDate):
-            other1 = PYDate.from_value(other1)
-        if not isinstance(other2, PYDate):
-            other2 = PYDate.from_value(other2)
+        if not isinstance(other1, PyDate):
+            other1 = PyDate.from_value(other1)
+        if not isinstance(other2, PyDate):
+            other2 = PyDate.from_value(other2)
         from_date = min(other1, other2)
         to_date = max(other1, other2)
         if from_inclusive:

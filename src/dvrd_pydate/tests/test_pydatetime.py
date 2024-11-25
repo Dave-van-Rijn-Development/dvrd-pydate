@@ -2,19 +2,19 @@ import unittest
 from datetime import datetime, timedelta, date
 
 from dvrd_pydate.enums import DatePart, TimePart
-from dvrd_pydate.pydatetime import PYDateTime
+from dvrd_pydate.pydatetime import PyDateTime
 
 
-class TestPYDateTime(unittest.TestCase):
+class TestPyDateTime(unittest.TestCase):
     def setUp(self):
         self.test_date = datetime(2023, 1, 1, 12, 30, 45, 123456)
-        self.py_datetime = PYDateTime.from_value(self.test_date)
+        self.py_datetime = PyDateTime.from_value(self.test_date)
 
     def test_initialization(self):
-        self.assertEqual(PYDateTime.from_value(self.test_date), self.test_date)
-        self.assertEqual(PYDateTime.from_value('2023-01-01 00:00:00.000'), datetime(2023, 1, 1, 0, 0, 0, 0))
+        self.assertEqual(PyDateTime.from_value(self.test_date), self.test_date)
+        self.assertEqual(PyDateTime.from_value('2023-01-01 00:00:00.000'), datetime(2023, 1, 1, 0, 0, 0, 0))
         now = datetime.now()
-        self.assertTrue((PYDateTime.from_value() - now).total_seconds() < 1)
+        self.assertTrue((PyDateTime.from_value() - now).total_seconds() < 1)
 
     def test_add_methods(self):
         # Test adding hours
@@ -107,42 +107,42 @@ class TestPYDateTime(unittest.TestCase):
     def test_iter(self):
         # Default iter, with end date
         expect_date = datetime.now()
-        end = PYDateTime.from_value(expect_date).add(value=1, key=DatePart.MONTHS)
-        for value in PYDateTime.iter(end=end):
+        end = PyDateTime.from_value(expect_date).add(value=1, key=DatePart.MONTHS)
+        for value in PyDateTime.iter(end=end):
             self.assertTrue((value - expect_date).total_seconds() < 1)
             expect_date += timedelta(days=1)
 
         start = datetime(2024, 1, 1, 0, 0, 0, 0)
         end = datetime(2024, 1, 31, 0, 0, 0, 0)
         expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
-        for value in PYDateTime.iter(start=start, end=end):
+        for value in PyDateTime.iter(start=start, end=end):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(days=1)
 
         start = datetime(2024, 1, 1, 0, 0, 0, 0)
         end = datetime(2024, 1, 31, 0, 0, 0, 0)
         expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
-        for value in PYDateTime.iter(start=start, end=end, step=(2, DatePart.DAYS)):
+        for value in PyDateTime.iter(start=start, end=end, step=(2, DatePart.DAYS)):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(days=2)
 
         start = datetime(2024, 1, 1, 0, 0, 0, 0)
         end = datetime(2024, 1, 31, 0, 0, 0, 0)
         expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
-        for value in PYDateTime.iter(start=start, end=end, step=(1, TimePart.HOUR)):
+        for value in PyDateTime.iter(start=start, end=end, step=(1, TimePart.HOUR)):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(hours=1)
 
         start = datetime(2024, 1, 1, 0, 0, 0, 0)
         end = datetime(2024, 1, 31, 0, 0, 0, 0)
         expect_date = datetime(2024, 1, 1, 0, 0, 0, 0)
-        for value in PYDateTime.iter(start=start, end=end, step=(2, TimePart.MINUTE)):
+        for value in PyDateTime.iter(start=start, end=end, step=(2, TimePart.MINUTE)):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(minutes=2)
 
     def test_start_of(self):
         now = datetime.now()
-        start_of = PYDateTime.from_value(now)
+        start_of = PyDateTime.from_value(now)
 
         # Date part
         expected = now.replace(month=1, day=1)
@@ -169,7 +169,7 @@ class TestPYDateTime(unittest.TestCase):
 
     def test_end_of(self):
         now = datetime.now()
-        end_of = PYDateTime.from_value(now)
+        end_of = PyDateTime.from_value(now)
 
         # Date part
         expected = now.replace(month=12, day=31)
