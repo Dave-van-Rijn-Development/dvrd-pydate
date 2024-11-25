@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 authors = [{ name = "Dave van Rijn Development", email = "develop@davevanrijn.nl" }]
 
 [project.urls]
-Homepage = "TODO"
+Homepage = "https://github.com/Dave-van-Rijn-Development/dvrd-pydate.git"
 
 [project.optional-dependencies]
 test = [

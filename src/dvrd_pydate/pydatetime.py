@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 from typing import Self, Generator
 
-from dvrd_pydate.enums import ModifyKey
+from dvrd_pydate.enums import DatePart, TimePart
 from dvrd_pydate.pydate import PYDate
 
 hours_in_day = 24
@@ -21,8 +21,11 @@ class PYDateTime(datetime, PYDate):
                           value.microsecond, value.tzinfo, fold=value.fold)
 
     @staticmethod
-    def iter(*, start: date | str, end: date | str | None = None,
-             step: ModifyKey | tuple[int, ModifyKey] = ModifyKey.DAY) -> Generator["PYDateTime", None, None]:
+    def iter(*, start: date | str = None, end: date | str | None = None,
+             step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY) -> \
+            Generator["PYDateTime", None, None]:
+        if start is None:
+            start = datetime.now()
         current = PYDateTime.from_value(start)
         end_value = None if end is None else PYDateTime.from_value(end)
         if isinstance(step, tuple):
@@ -35,32 +38,32 @@ class PYDateTime(datetime, PYDate):
             yield current
             current = current.add(value=step_value, key=step_key)
 
-    def add(self, *, value: int, key: ModifyKey) -> Self:
-        try:
+    def add(self, *, value: int, key: DatePart | TimePart) -> Self:
+        if isinstance(key, DatePart):
             return super().add(value=value, key=key)
-        except KeyError:
-            if key in [ModifyKey.HOUR, ModifyKey.HOURS]:
-                return self.add_hours(value)
-            elif key in [ModifyKey.MINUTE, ModifyKey.MINUTES]:
-                return self.add_minutes(value)
-            elif key in [ModifyKey.SECOND, ModifyKey.SECONDS]:
-                return self.add_seconds(value)
-            elif key in [ModifyKey.MICROSECOND, ModifyKey.MICROSECONDS]:
-                return self.add_microseconds(value)
+        elif key in [TimePart.HOUR, TimePart.HOURS]:
+            return self.add_hours(value)
+        elif key in [TimePart.MINUTE, TimePart.MINUTES]:
+            return self.add_minutes(value)
+        elif key in [TimePart.SECOND, TimePart.SECONDS]:
+            return self.add_seconds(value)
+        elif key in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
+            return self.add_microseconds(value)
+        else:
             raise KeyError(f'Key "{key}" cannot be used in PYDateTime')
 
-    def subtract(self, *, value: int, key: ModifyKey) -> Self:
-        try:
-            super().subtract(value=value, key=key)
-        except KeyError:
-            if key in [ModifyKey.HOUR, ModifyKey.HOURS]:
-                return self.subtract_hours(value)
-            elif key in [ModifyKey.MINUTE, ModifyKey.MINUTES]:
-                return self.subtract_minutes(value)
-            elif key in [ModifyKey.SECOND, ModifyKey.SECONDS]:
-                return self.subtract_seconds(value)
-            elif key in [ModifyKey.MICROSECOND, ModifyKey.MICROSECONDS]:
-                return self.subtract_microseconds(value)
+    def subtract(self, *, value: int, key: DatePart | TimePart) -> Self:
+        if isinstance(key, DatePart):
+            return super().subtract(value=value, key=key)
+        elif key in [TimePart.HOUR, TimePart.HOURS]:
+            return self.subtract_hours(value)
+        elif key in [TimePart.MINUTE, TimePart.MINUTES]:
+            return self.subtract_minutes(value)
+        elif key in [TimePart.SECOND, TimePart.SECONDS]:
+            return self.subtract_seconds(value)
+        elif key in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
+            return self.subtract_microseconds(value)
+        else:
             raise KeyError(f'Key "{key}" cannot be used in PYDateTime')
 
     def add_hours(self, value: int) -> Self:
@@ -110,3 +113,35 @@ class PYDateTime(datetime, PYDate):
 
     def subtract_microsecond(self) -> Self:
         return self.subtract_microseconds(1)
+
+    def start_of(self, part: DatePart | TimePart) -> Self:
+        if isinstance(part, DatePart):
+            if part in [DatePart.DAY, DatePart.DAYS]:
+                return self.replace(hour=0, minute=0, second=0, microsecond=0)
+            return super().start_of(part)
+        elif part in [TimePart.HOUR, TimePart.HOURS]:
+            return self.replace(minute=0, second=0, microsecond=0)
+        elif part in [TimePart.MINUTE, TimePart.MINUTES]:
+            return self.replace(second=0, microsecond=0)
+        elif part in [TimePart.SECOND, TimePart.SECONDS]:
+            return self.replace(microsecond=0)
+        elif part in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
+            return self
+        else:
+            raise KeyError(f'Unsupported start_of part {part}')
+
+    def end_of(self, part: DatePart | TimePart) -> Self:
+        if isinstance(part, DatePart):
+            if part in [DatePart.DAY, DatePart.DAYS]:
+                return self.replace(hour=23, minute=59, second=59, microsecond=999)
+            return super().end_of(part)
+        elif part in [TimePart.HOUR, TimePart.HOURS]:
+            return self.replace(minute=59, second=59, microsecond=999)
+        elif part in [TimePart.MINUTE, TimePart.MINUTES]:
+            return self.replace(second=59, microsecond=999)
+        elif part in [TimePart.SECOND, TimePart.SECONDS]:
+            return self.replace(microsecond=999)
+        elif part in [TimePart.MICROSECOND, TimePart.MICROSECONDS]:
+            return self
+        else:
+            raise KeyError(f'Unsupported end_of part {part}')

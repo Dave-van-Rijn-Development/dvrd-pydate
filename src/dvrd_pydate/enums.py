@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ModifyKey(Enum):
+class DatePart(Enum):
     YEAR = 'year'
     YEARS = 'years'
     MONTH = 'month'
@@ -10,6 +10,9 @@ class ModifyKey(Enum):
     DAYS = 'days'
     WEEK = 'week'
     WEEKS = 'weeks'
+
+
+class TimePart(Enum):
     HOUR = 'hour'
     HOURS = 'hours'
     MINUTE = 'minute'

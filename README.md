@@ -6,7 +6,7 @@ Python `date` and `datetime` extensions, adding useful init and mutation functio
 
 ```python
 from datetime import date
-from dvrd_pydate import PYDate, ModifyKey
+from dvrd_pydate import PYDate, DatePart
 
 # Default date functions are still available
 today = PYDate.today()
@@ -16,8 +16,8 @@ date_value = PYDate.from_value('2024-01-01')
 date_value = PYDate.from_value(date(2024, 1, 1))
 
 # Mutation functions are available for all properties
-date_value = date_value.add(value=3, key=ModifyKey.DAYS)  # 2024-01-04
-date_value = date_value.subtract(value=1, key=ModifyKey.YEAR)  # 2023-01-04
+date_value = date_value.add(value=3, key=DatePart.DAYS)  # 2024-01-04
+date_value = date_value.subtract(value=1, key=DatePart.YEAR)  # 2023-01-04
 
 # Simplified functions are available for mutations with value 1
 date_value = date_value.add_year()  # 2024-01-04
@@ -52,8 +52,8 @@ Python `date` extension.
 
 ### PYDateTime
 
-Python `datetime` extension. Inherits all functions from `PYDate`, but extends the `add` and `subtract` support to the
-time parts.
+Python `datetime` extension. Inherits all functions from `PYDate`, but extends the `add`, `subtract`, `start_of`,
+`end_of` support to the time parts.
 
 | **Function**            | Arguments    | **Description**                                       |
 |-------------------------|--------------|-------------------------------------------------------|
