@@ -1,7 +1,7 @@
 [project]
 name = "dvrd_pydate"
-version = "1.0.0"
-description = "Dave van Rijn Development date extension"
+version = "1.0.1"
+description = "Python date and datetime extension"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Dave van Rijn Development", email = "develop@davevanrijn.nl" }]
