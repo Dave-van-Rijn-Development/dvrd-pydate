@@ -169,6 +169,18 @@ class TestPYDate(unittest.TestCase):
             last_value = value
         self.assertLess(last_value, end)
 
+        # Max steps argument
+        result = PYDate.iter(max_steps=5)
+        self.assertEqual(len(list(result)), 5)
+        self.assertRaises(StopIteration, lambda: next(PYDate.iter(max_steps=0)))
+
+        # Max steps + end
+        result = PYDate.iter(end=PYDate.today().add(4, DatePart.DAYS), max_steps=5)
+        self.assertEqual(len(list(result)), 4)
+
+        result = PYDate.iter(end=PYDate.today().add(6, DatePart.DAYS), max_steps=5)
+        self.assertEqual(len(list(result)), 5)
+
         # Invalid interval
         self.assertRaises(KeyError,
                           lambda: next(PYDate.iter(start=PYDate.today(), end=PYDate.today(), step=TimePart.HOURS)))

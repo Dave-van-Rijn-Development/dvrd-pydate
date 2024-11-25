@@ -19,30 +19,38 @@ class PYDate(date):
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
-             step: DatePart | TimePart | tuple[int, DatePart | TimePart] = \
-                     DatePart.DAY) -> Generator["PYDate", None, None]:
+             step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
+            Generator["PYDate", None, None]:
+        if max_steps == 0:
+            # Raises StopIteration
+            return
         if isinstance(step, TimePart):
             raise KeyError('Cannot use time parts in PYDate')
-        if start is None:
-            start = date.today()
-        current = PYDate.from_value(start)
-        end_value = None if end is None else PYDate.from_value(end)
-        if isinstance(step, tuple):
+        elif isinstance(step, tuple):
             if isinstance((step_key := step[1]), TimePart):
                 raise KeyError('Cannot use time parts in PYDate')
             step_value = step[0]
         else:
             step_value = 1
             step_key = step
+
+        if start is None:
+            start = date.today()
+        current = PYDate.from_value(start)
+        end_value = None if end is None else PYDate.from_value(end)
+        current_step = 0
         while end_value is None or current < end_value:
             yield current
+            current_step += 1
+            if max_steps is not None and current_step == max_steps:
+                break
             current = current.add(value=step_value, key=step_key)
 
     @property
     def max_day(self) -> int:
         return monthrange(self.year, self.month)[1]
 
-    def add(self, *, value: int, key: DatePart) -> Self:
+    def add(self, value: int, key: DatePart) -> Self:
         if key in [DatePart.YEAR, DatePart.YEARS]:
             return self.add_years(value)
         elif key in [DatePart.MONTH, DatePart.MONTHS]:
