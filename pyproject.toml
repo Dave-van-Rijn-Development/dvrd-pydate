@@ -18,6 +18,9 @@ test = [
 requires = ["setuptools>=62.6", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+exclude = ["*tests*"]
+
 [tool.coverage.run]
 omit = [
     "*/tests/*"
