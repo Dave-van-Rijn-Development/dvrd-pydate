@@ -1,5 +1,5 @@
 from calendar import monthrange
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Self, Generator, TypeAlias
 
 from dvrd_pydate.enums import DatePart, TimePart
@@ -12,12 +12,17 @@ CommonArg: TypeAlias = int | str | DatePart | TimePart
 
 class PyDate(date):
     @staticmethod
-    def from_value(value: date | str = None):
+    def from_value(value: date | str = None) -> "PyDate":
         if isinstance(value, str):
             value = date.fromisoformat(value)
         elif value is None:
             value = date.today()
         return PyDate(value.year, value.month, value.day)
+
+    @staticmethod
+    def parse_date(*, value: str, fmt: str) -> "PyDate":
+        parsed = datetime.strptime(value, fmt)
+        return PyDate(parsed.year, parsed.month, parsed.day)
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
