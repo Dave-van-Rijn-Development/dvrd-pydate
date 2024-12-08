@@ -1,9 +1,9 @@
 [project]
 name = "dvrd_pydate"
-version = "1.0.1"
+version = "1.1.0"
 description = "Python date and datetime extension"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 authors = [{ name = "Dave van Rijn Development", email = "develop@davevanrijn.nl" }]
 
 [project.urls]
@@ -17,6 +17,9 @@ test = [
 [build-system]
 requires = ["setuptools>=62.6", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["*tests*"]
 
 [tool.coverage.run]
 omit = [

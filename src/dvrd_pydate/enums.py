@@ -1,7 +1,13 @@
 from enum import Enum
 
 
-class DatePart(Enum):
+class BaseEnum(Enum):
+    @classmethod
+    def get_item(cls, value: str):
+        return next((item for item in cls if item.value == value), None)
+
+
+class DatePart(BaseEnum):
     YEAR = 'year'
     YEARS = 'years'
     MONTH = 'month'
@@ -12,7 +18,7 @@ class DatePart(Enum):
     WEEKS = 'weeks'
 
 
-class TimePart(Enum):
+class TimePart(BaseEnum):
     HOUR = 'hour'
     HOURS = 'hours'
     MINUTE = 'minute'
