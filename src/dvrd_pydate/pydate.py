@@ -54,8 +54,12 @@ class PyDate(date):
             current = current.add(step_value, step_key)
 
     def __new__(cls, *args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], str):
-            return PyDate.fromisoformat(args[0])
+        if len(args) == 1:
+            arg = args[0]
+            if isinstance(arg, str):
+                return PyDate.fromisoformat(args[0])
+            elif isinstance(arg, date):
+                return date.__new__(cls, arg.year, arg.month, arg.day)
         if not args and not kwargs:
             now = date.today()
             return date.__new__(cls, now.year, now.month, now.day)

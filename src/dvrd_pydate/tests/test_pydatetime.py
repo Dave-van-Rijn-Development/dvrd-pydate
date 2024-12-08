@@ -17,7 +17,10 @@ class TestPyDateTime(unittest.TestCase):
 
         self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime.from_value('2023-01-01 00:00:00.000'))
         self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime(2023, 1, 1, 0, 0, 0, 0))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime(datetime(2023, 1, 1, 0, 0, 0, 0)))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime(date(2023, 1, 1)))
         self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime('2023-01-01 00:00:00.000'))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime('2023-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'))
 
         now = datetime.now()
         self.assertTrue((PyDateTime.from_value() - now).total_seconds() < 1)

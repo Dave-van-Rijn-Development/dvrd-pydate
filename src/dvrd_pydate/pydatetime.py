@@ -12,8 +12,20 @@ microseconds_in_second = 1000
 
 class PyDateTime(datetime, PyDate):
     def __new__(cls, *args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], str):
-            return PyDateTime.fromisoformat(args[0])
+        if len(args) == 1:
+            arg = args[0]
+            if isinstance(arg, str):
+                return PyDateTime.fromisoformat(arg)
+            elif isinstance(arg, datetime):
+                return datetime.__new__(cls, arg.year, arg.month, arg.day, arg.hour, arg.minute, arg.second,
+                                        arg.microsecond, arg.tzinfo, fold=arg.fold)
+            elif isinstance(arg, date):
+                return datetime.__new__(cls, arg.year, arg.month, arg.day)
+        elif len(args) == 2:
+            arg_1 = args[0]
+            arg_2 = args[1]
+            if isinstance(arg_1, str) and isinstance(arg_2, str):
+                return PyDateTime.strptime(arg_1, arg_2)
         if not args and not kwargs:
             now = datetime.now()
             return datetime.__new__(cls, now.year, now.month, now.day, now.hour, now.minute, now.second,

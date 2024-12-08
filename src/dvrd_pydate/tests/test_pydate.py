@@ -14,6 +14,7 @@ class TestPyDate(unittest.TestCase):
         self.assertEqual(date(2023, 1, 15), PyDate.from_value("2023-01-15"))
         self.assertEqual(date(2023, 1, 15), PyDate("2023-01-15"))
         self.assertEqual(date(2023, 1, 15), PyDate(2023, 1, 15))
+        self.assertEqual(date(2023, 1, 15), PyDate(date(2023, 1, 15)))
         self.assertEqual(date(2023, 1, 15), PyDate.parse_date(value='15-01-2023', fmt='%d-%m-%Y'))
         self.assertEqual(date.today(), PyDate.from_value())
         self.assertEqual(date.today(), PyDate())
