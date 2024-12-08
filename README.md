@@ -68,6 +68,19 @@ for date_value in PyDate.iter(max_steps=7):
 Both classes provide functions to alter the date or time. All functions return a new instance, mutations are not done
 in-place. All functions can therefore also be chained together.
 
+### Set
+Set a specific part of the date/time to given value.
+
+```python
+from dvrd_pydate import PyDate, PyDateTime, DatePart, TimePart
+
+date_value = PyDate.today()
+date_value = date_value.set(DatePart.DAY, 3)
+
+datetime_value = PyDateTime.now()
+datetime_value = datetime_value.set(TimePart.SECONDS, 30)
+```
+
 ### Add
 
 Add an amount of date/time part. `PyDate` only supports `DatePart` parts, while `PyDateTime` supports both `DatePart` (
