@@ -3,7 +3,7 @@ name = "dvrd_pydate"
 version = "1.1.0"
 description = "Python date and datetime extension"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Dave van Rijn Development", email = "develop@davevanrijn.nl" }]
 
 [project.urls]
