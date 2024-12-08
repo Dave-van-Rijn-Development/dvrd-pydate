@@ -21,9 +21,11 @@ class PyDateTime(datetime, PyDate):
         return datetime.__new__(cls, *args, **kwargs)
 
     @staticmethod
-    def from_value(value: datetime | str = None) -> "PyDateTime":
+    def from_value(value: datetime | date | str = None) -> "PyDateTime":
         if isinstance(value, str):
             value = datetime.fromisoformat(value)
+        elif isinstance(value, date) and not isinstance(value, datetime):
+            value = datetime.combine(value, datetime.now().time())
         elif value is None:
             value = datetime.now()
         return PyDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second,
