@@ -210,6 +210,9 @@ class PyDateTime(datetime, PyDate):
         else:
             raise KeyError(f'Unsupported end_of part {part}')
 
+    def py_date(self) -> PyDate:
+        return PyDate(self.year, self.month, self.day)
+
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart | TimePart, int]:
     arg1 = _int_or_date_time_part(arg1)

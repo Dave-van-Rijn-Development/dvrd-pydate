@@ -263,6 +263,10 @@ class PyDate(date):
             return False
         return True
 
+    def py_datetime(self) -> "PyDateTime":
+        from dvrd_pydate.pydatetime import PyDateTime
+        return PyDateTime(self.year, self.month, self.day)
+
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart, int]:
     arg1 = _int_or_date_part(arg1)

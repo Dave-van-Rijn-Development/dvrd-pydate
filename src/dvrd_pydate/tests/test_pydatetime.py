@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime, timedelta, date
 
+from dvrd_pydate import PyDate
 from dvrd_pydate.enums import DatePart, TimePart
 from dvrd_pydate.pydatetime import PyDateTime
 
@@ -224,6 +225,11 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(datetime(2024, 1, 1, 0, 2, 0), pydate.set(TimePart.MINUTE, 2))
         self.assertEqual(datetime(2024, 1, 1, 0, 0, 2), pydate.set(TimePart.SECONDS, 2))
         self.assertEqual(datetime(2024, 1, 1, 0, 0, 0, 2), pydate.set(TimePart.MICROSECOND, 2))
+
+    def test_py_date(self):
+        self.assertEqual(PyDate(2024, 1, 1), PyDateTime(2024, 1, 1, 0, 0, 0).py_date())
+        # Test that time doesn't matter here
+        self.assertEqual(PyDate(2024, 1, 1), PyDateTime(2024, 1, 1, 23, 59, 59).py_date())
 
 
 if __name__ == '__main__':

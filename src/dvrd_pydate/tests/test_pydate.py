@@ -2,6 +2,7 @@ import unittest
 from calendar import monthrange
 from datetime import date, timedelta
 
+from dvrd_pydate import PyDateTime
 from dvrd_pydate.enums import DatePart, TimePart
 from dvrd_pydate.pydate import PyDate
 
@@ -445,6 +446,9 @@ class TestPyDate(unittest.TestCase):
         self.assertRaises(TypeError, pydate.set, TimePart.HOURS, 2025)
         self.assertRaises(ValueError, pydate.set, None, 2025)
         self.assertRaises(ValueError, pydate.set, DatePart.DAY, None)
+
+    def test_py_datetime(self):
+        self.assertEqual(PyDateTime(2024, 1, 1, 0, 0, 0), PyDate(2024, 1, 1).py_datetime())
 
 
 if __name__ == '__main__':
