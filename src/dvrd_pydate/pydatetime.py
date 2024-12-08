@@ -21,7 +21,7 @@ class PyDateTime(datetime, PyDate):
         return datetime.__new__(cls, *args, **kwargs)
 
     @staticmethod
-    def from_value(value: datetime | str = None):
+    def from_value(value: datetime | str = None) -> "PyDateTime":
         if isinstance(value, str):
             value = datetime.fromisoformat(value)
         elif value is None:
