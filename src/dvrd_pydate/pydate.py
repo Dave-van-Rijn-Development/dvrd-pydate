@@ -1,11 +1,13 @@
 from calendar import monthrange
 from datetime import date, timedelta
-from typing import Self, Generator
+from typing import Self, Generator, TypeAlias
 
 from dvrd_pydate.enums import DatePart, TimePart
 
 days_in_week = 7
 months_in_year = 12
+
+CommonArg: TypeAlias = int | str | DatePart | TimePart
 
 
 class PyDate(date):
@@ -44,35 +46,58 @@ class PyDate(date):
             current_step += 1
             if max_steps is not None and current_step == max_steps:
                 break
-            current = current.add(value=step_value, key=step_key)
+            current = current.add(step_value, step_key)
+
+    def __new__(cls, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], str):
+            return PyDate.fromisoformat(args[0])
+        if not args and not kwargs:
+            now = date.today()
+            return date.__new__(cls, now.year, now.month, now.day)
+        return date.__new__(cls, *args, **kwargs)
 
     @property
     def max_day(self) -> int:
         return monthrange(self.year, self.month)[1]
 
-    def add(self, value: int, key: DatePart) -> Self:
-        if key in [DatePart.YEAR, DatePart.YEARS]:
-            return self.add_years(value)
-        elif key in [DatePart.MONTH, DatePart.MONTHS]:
-            return self.add_months(value)
-        elif key in [DatePart.WEEK, DatePart.WEEKS]:
-            return self.add_weeks(value)
-        elif key in [DatePart.DAY, DatePart.DAYS]:
-            return self.add_days(value)
-        else:
-            raise KeyError(f'Key "{key}" cannot be used in PyDate')
+    def set(self, value_or_key: CommonArg, key_or_value: CommonArg):
+        key, value = _determine_key_and_value(value_or_key, key_or_value)
+        match key:
+            case DatePart.DAY | DatePart.DAYS:
+                return self.set_day(value)
+            case DatePart.MONTH | DatePart.MONTHS:
+                return self.set_month(value)
+            case DatePart.YEAR | DatePart.YEARS:
+                return self.set_year(value)
 
-    def subtract(self, value: int, key: DatePart) -> Self:
-        if key in [DatePart.YEAR, DatePart.YEARS]:
-            return self.subtract_years(value)
-        elif key in [DatePart.MONTH, DatePart.MONTHS]:
-            return self.subtract_months(value)
-        elif key in [DatePart.WEEK, DatePart.WEEKS]:
-            return self.subtract_weeks(value)
-        elif key in [DatePart.DAY, DatePart.DAYS]:
-            return self.subtract_days(value)
-        else:
-            raise KeyError(f'Key "{key}" cannot be used in PyDate')
+    def add(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
+        key, value = _determine_key_and_value(value_or_key, key_or_value)
+        match key:
+            case DatePart.YEARS | DatePart.YEAR:
+                return self.add_years(value)
+            case DatePart.MONTH | DatePart.MONTHS:
+                return self.add_months(value)
+            case DatePart.WEEK | DatePart.WEEKS:
+                return self.add_weeks(value)
+            case DatePart.DAY | DatePart.DAYS:
+                return self.add_days(value)
+
+    def subtract(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
+        key, value = _determine_key_and_value(value_or_key, key_or_value)
+        match key:
+            case DatePart.YEARS | DatePart.YEAR:
+                return self.subtract_years(value)
+            case DatePart.MONTH | DatePart.MONTHS:
+                return self.subtract_months(value)
+            case DatePart.WEEK | DatePart.WEEKS:
+                return self.subtract_weeks(value)
+            case DatePart.DAY | DatePart.DAYS:
+                return self.subtract_days(value)
+
+    def set_year(self, value: int) -> Self:
+        return self.replace(year=value)
+
+    set_years = set_year
 
     def add_years(self, value: int) -> Self:
         return self.replace(year=self.year + value)
@@ -85,6 +110,16 @@ class PyDate(date):
 
     def subtract_year(self) -> Self:
         return self.subtract_years(1)
+
+    def set_month(self, month: int) -> Self:
+        """
+        Set the month
+        :param month: 1-indexed month (1-12)
+        :return: new PyDate
+        """
+        return self.replace(month=month)
+
+    set_months = set_month
 
     def add_months(self, value: int) -> Self:
         new_date = self.clone()
@@ -123,6 +158,11 @@ class PyDate(date):
 
     def subtract_week(self) -> Self:
         return self.subtract_weeks(1)
+
+    def set_day(self, value: int) -> Self:
+        return self.replace(day=value)
+
+    set_days = set_day
 
     def add_days(self, value: int) -> Self:
         return self + timedelta(days=value)
@@ -213,3 +253,32 @@ class PyDate(date):
         elif not self.is_before(to_date, granularity):
             return False
         return True
+
+
+def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart, int]:
+    arg1 = _int_or_date_part(arg1)
+    arg2 = _int_or_date_part(arg2)
+    key = value = None
+    if isinstance(arg1, int):
+        value = arg1
+    elif isinstance(arg1, DatePart):
+        key = arg1
+    elif isinstance(arg1, TimePart):
+        raise TypeError('TimePart cannot be used in PyDate')
+
+    if isinstance(arg2, int):
+        value = arg2
+    elif isinstance(arg2, DatePart):
+        key = arg2
+    elif isinstance(arg2, TimePart):
+        raise TypeError('TimePart cannot be used in PyDate')
+
+    if key is None or value is None:
+        raise ValueError('Key and/or value cannot be None')
+    return key, value
+
+
+def _int_or_date_part(arg: CommonArg) -> int | DatePart | TimePart:
+    if isinstance(arg, str):
+        return DatePart.get_item(arg)
+    return arg

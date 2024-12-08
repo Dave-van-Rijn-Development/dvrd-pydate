@@ -11,14 +11,18 @@ class TestPyDateTime(unittest.TestCase):
         self.py_datetime = PyDateTime.from_value(self.test_date)
 
     def test_initialization(self):
-        self.assertEqual(PyDateTime.from_value(self.test_date), self.test_date)
-        self.assertEqual(PyDateTime.from_value('2023-01-01 00:00:00.000'), datetime(2023, 1, 1, 0, 0, 0, 0))
+        self.assertEqual(self.test_date, PyDateTime.from_value(self.test_date))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime.from_value('2023-01-01 00:00:00.000'))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime(2023, 1, 1, 0, 0, 0, 0))
+        self.assertEqual(datetime(2023, 1, 1, 0, 0, 0, 0), PyDateTime('2023-01-01 00:00:00.000'))
+
         now = datetime.now()
         self.assertTrue((PyDateTime.from_value() - now).total_seconds() < 1)
+        self.assertTrue((PyDateTime() - now).total_seconds() < 1)
 
     def test_add_methods(self):
         # Test adding hours
-        result = self.py_datetime.clone().add(value=2, key=TimePart.HOURS)
+        result = self.py_datetime.clone().add(2, TimePart.HOURS)
         expected = self.test_date + timedelta(hours=2)
         self.assertEqual(expected, result)
 
@@ -27,7 +31,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(expected, result)
 
         # Test adding minutes
-        result = self.py_datetime.clone().add(value=30, key=TimePart.MINUTES)
+        result = self.py_datetime.clone().add(30, TimePart.MINUTES)
         expected = self.test_date + timedelta(minutes=30)
         self.assertEqual(expected, result)
 
@@ -36,7 +40,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(expected, result)
 
         # Test adding seconds
-        result = self.py_datetime.clone().add(value=30, key=TimePart.SECOND)
+        result = self.py_datetime.clone().add(30, TimePart.SECOND)
         expected = self.test_date + timedelta(seconds=30)
         self.assertEqual(expected, result)
 
@@ -45,7 +49,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(expected, result)
 
         # Test adding microseconds
-        result = self.py_datetime.clone().add(value=30, key=TimePart.MICROSECOND)
+        result = self.py_datetime.clone().add(30, TimePart.MICROSECOND)
         expected = self.test_date + timedelta(microseconds=30)
         self.assertEqual(expected, result)
 
@@ -53,16 +57,16 @@ class TestPyDateTime(unittest.TestCase):
         expected = self.test_date + timedelta(microseconds=1)
         self.assertEqual(expected, result)
 
-        self.assertRaises(KeyError, self.py_datetime.add, value=30, key='not_a_part')
+        self.assertRaises(ValueError, self.py_datetime.add, 30, 'not_a_part')
 
     def test_subtract_methods(self):
         # Test subtracting date part
-        result = self.py_datetime.clone().subtract(value=1, key=DatePart.DAY)
+        result = self.py_datetime.clone().subtract(1, DatePart.DAY)
         expected = self.test_date - timedelta(days=1)
         self.assertEqual(result, expected)
 
         # Test subtracting hours
-        result = self.py_datetime.clone().subtract(value=2, key=TimePart.HOURS)
+        result = self.py_datetime.clone().subtract(2, TimePart.HOURS)
         expected = self.test_date - timedelta(hours=2)
         self.assertEqual(result, expected)
 
@@ -71,7 +75,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(result, expected)
 
         # Test subtracting minutes
-        result = self.py_datetime.clone().subtract(value=30, key=TimePart.MINUTES)
+        result = self.py_datetime.clone().subtract(30, TimePart.MINUTES)
         expected = self.test_date - timedelta(minutes=30)
         self.assertEqual(result, expected)
 
@@ -80,7 +84,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(result, expected)
 
         # Test subtracting seconds
-        result = self.py_datetime.clone().subtract(value=30, key=TimePart.SECOND)
+        result = self.py_datetime.clone().subtract(30, TimePart.SECOND)
         expected = self.test_date - timedelta(seconds=30)
         self.assertEqual(result, expected)
 
@@ -89,7 +93,7 @@ class TestPyDateTime(unittest.TestCase):
         self.assertEqual(result, expected)
 
         # Test subtracting microseconds
-        result = self.py_datetime.clone().subtract(value=30, key=TimePart.MICROSECOND)
+        result = self.py_datetime.clone().subtract(30, TimePart.MICROSECOND)
         expected = self.test_date - timedelta(microseconds=30)
         self.assertEqual(result, expected)
 
@@ -97,7 +101,7 @@ class TestPyDateTime(unittest.TestCase):
         expected = self.test_date - timedelta(microseconds=1)
         self.assertEqual(result, expected)
 
-        self.assertRaises(KeyError, self.py_datetime.subtract, value=30, key='not_a_part')
+        self.assertRaises(ValueError, self.py_datetime.subtract, 30, 'not_a_part')
 
     def test_clone(self):
         clone = self.py_datetime.clone()
@@ -107,7 +111,7 @@ class TestPyDateTime(unittest.TestCase):
     def test_iter(self):
         # Default iter, with end date
         expect_date = datetime.now()
-        end = PyDateTime.from_value(expect_date).add(value=1, key=DatePart.MONTHS)
+        end = PyDateTime.from_value(expect_date).add(1, DatePart.MONTHS)
         for value in PyDateTime.iter(end=end):
             self.assertTrue((value - expect_date).total_seconds() < 1)
             expect_date += timedelta(days=1)
@@ -139,6 +143,10 @@ class TestPyDateTime(unittest.TestCase):
         for value in PyDateTime.iter(start=start, end=end, step=(2, TimePart.MINUTE)):
             self.assertEqual(expect_date, value)
             expect_date += timedelta(minutes=2)
+
+        result = PyDateTime.iter(max_steps=5)
+        self.assertEqual(len(list(result)), 5)
+        self.assertRaises(StopIteration, lambda: next(PyDateTime.iter(max_steps=0)))
 
     def test_start_of(self):
         now = datetime.now()
@@ -193,6 +201,23 @@ class TestPyDateTime(unittest.TestCase):
 
         self.assertIs(end_of, end_of.end_of(TimePart.MICROSECONDS))
         self.assertRaises(KeyError, end_of.end_of, 'not_a_part')
+
+    def test_set_operations(self):
+        pydate = PyDateTime('2024-01-01 00:00:00')
+
+        # Set date part
+        self.assertEqual(datetime(2024, 1, 2, 0, 0, 0), pydate.set('day', 2))
+        self.assertNotEqual(datetime(2024, 1, 1, 0, 0, 0), pydate.set('day', 2))
+
+        # Set time part
+        self.assertEqual(datetime(2024, 1, 1, 2, 0, 0), pydate.set('hour', 2))
+        self.assertEqual(datetime(2024, 1, 1, 2, 0, 0), pydate.set(TimePart.HOUR, 2))
+        self.assertEqual(datetime(2024, 1, 1, 2, 0, 0), pydate.set(2, 'hour'))
+        self.assertEqual(datetime(2024, 1, 1, 2, 0, 0), pydate.set(2, TimePart.HOUR))
+
+        self.assertEqual(datetime(2024, 1, 1, 0, 2, 0), pydate.set(TimePart.MINUTE, 2))
+        self.assertEqual(datetime(2024, 1, 1, 0, 0, 2), pydate.set(TimePart.SECONDS, 2))
+        self.assertEqual(datetime(2024, 1, 1, 0, 0, 0, 2), pydate.set(TimePart.MICROSECOND, 2))
 
 
 if __name__ == '__main__':
