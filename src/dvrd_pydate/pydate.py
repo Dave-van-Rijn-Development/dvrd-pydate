@@ -263,7 +263,7 @@ class PyDate(date):
             return False
         return True
 
-    def py_datetime(self) -> "PyDateTime":
+    def py_datetime(self):
         from dvrd_pydate.pydatetime import PyDateTime
         return PyDateTime(self.year, self.month, self.day)
 
