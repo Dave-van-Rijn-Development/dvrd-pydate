@@ -243,7 +243,7 @@ class PyDate(date):
             other = PyDate.from_value(other)
         return self.start_of(granularity) > other.start_of(granularity)
 
-    def is_between(self, other1: date | str, other2: date | str, *, granularity: DatePart = DatePart.DAY,
+    def is_between(self, other1: date | str, other2: date | str, *, granularity: DatePart | TimePart = DatePart.DAY,
                    from_inclusive: bool = True, to_inclusive: bool = True) -> bool:
         if not isinstance(other1, PyDate):
             other1 = PyDate.from_value(other1)

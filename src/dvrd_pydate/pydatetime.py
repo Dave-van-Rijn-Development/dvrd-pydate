@@ -210,6 +210,27 @@ class PyDateTime(datetime, PyDate):
         else:
             raise KeyError(f'Unsupported end_of part {part}')
 
+    def is_before(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
+        return super().is_before(other=other, granularity=granularity)
+
+    def is_same_or_before(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
+        return super().is_same_or_before(other=other, granularity=granularity)
+
+    def is_same(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
+        return super().is_same(other=other, granularity=granularity)
+
+    def is_same_or_after(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
+        return super().is_same_or_after(other=other, granularity=granularity)
+
+    def is_after(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
+        return super().is_after(other=other, granularity=granularity)
+
+    def is_between(self, other1: date | str, other2: date | str, *,
+                   granularity: DatePart | TimePart = TimePart.MICROSECOND,
+                   from_inclusive: bool = True, to_inclusive: bool = True) -> bool:
+        return super().is_between(other1=other1, other2=other2, granularity=granularity, from_inclusive=from_inclusive,
+                                  to_inclusive=to_inclusive)
+
     def py_date(self) -> PyDate:
         return PyDate(self.year, self.month, self.day)
 
