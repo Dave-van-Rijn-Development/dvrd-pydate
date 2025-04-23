@@ -14,6 +14,8 @@ class PyDateTime(datetime, PyDate):
     def __new__(cls, *args, **kwargs):
         if len(args) == 1:
             arg = args[0]
+            if arg is None:
+                return PyDateTime.now()
             if isinstance(arg, str):
                 return PyDateTime.fromisoformat(arg)
             elif isinstance(arg, datetime):

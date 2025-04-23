@@ -56,6 +56,8 @@ class PyDate(date):
     def __new__(cls, *args, **kwargs):
         if len(args) == 1:
             arg = args[0]
+            if arg is None:
+                return PyDate.today()
             if isinstance(arg, str):
                 return PyDate.fromisoformat(args[0])
             elif isinstance(arg, date):
