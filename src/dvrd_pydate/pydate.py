@@ -7,7 +7,7 @@ from dvrd_pydate.enums import DatePart, TimePart
 days_in_week = 7
 months_in_year = 12
 
-CommonArg: TypeAlias = int | str | DatePart | TimePart
+CommonArg: TypeAlias = int | float | str | DatePart | TimePart
 
 
 class PyDate(date):
@@ -26,7 +26,7 @@ class PyDate(date):
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
-             step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
+             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
             Generator["PyDate", None, None]:
         if max_steps == 0:
             # Raises StopIteration
@@ -271,17 +271,17 @@ class PyDate(date):
 
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart, int]:
-    arg1 = _int_or_date_part(arg1)
-    arg2 = _int_or_date_part(arg2)
+    arg1 = _number_or_date_part(arg1)
+    arg2 = _number_or_date_part(arg2)
     key = value = None
-    if isinstance(arg1, int):
+    if isinstance(arg1, (int, float)):
         value = arg1
     elif isinstance(arg1, DatePart):
         key = arg1
     elif isinstance(arg1, TimePart):
         raise TypeError('TimePart cannot be used in PyDate')
 
-    if isinstance(arg2, int):
+    if isinstance(arg2, (int, float)):
         value = arg2
     elif isinstance(arg2, DatePart):
         key = arg2
@@ -293,7 +293,7 @@ def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart
     return key, value
 
 
-def _int_or_date_part(arg: CommonArg) -> int | DatePart | TimePart:
+def _number_or_date_part(arg: CommonArg) -> int | float | DatePart | TimePart:
     if isinstance(arg, str):
         return DatePart.get_item(arg)
     return arg

@@ -47,7 +47,7 @@ class PyDateTime(datetime, PyDate):
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
-             step: DatePart | TimePart | tuple[int, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
+             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
             Generator["PyDateTime", None, None]:
         if max_steps == 0:
             # Raises StopIteration
@@ -117,13 +117,13 @@ class PyDateTime(datetime, PyDate):
 
     set_hours = set_hour
 
-    def add_hours(self, value: int) -> Self:
+    def add_hours(self, value: int | float) -> Self:
         return self + timedelta(hours=value)
 
     def add_hour(self) -> Self:
         return self.add_hours(1)
 
-    def subtract_hours(self, value: int) -> Self:
+    def subtract_hours(self, value: int | float) -> Self:
         return self - timedelta(hours=value)
 
     def subtract_hour(self) -> Self:
@@ -134,13 +134,13 @@ class PyDateTime(datetime, PyDate):
 
     set_minutes = set_minute
 
-    def add_minutes(self, value: int) -> Self:
+    def add_minutes(self, value: int | float) -> Self:
         return self + timedelta(minutes=value)
 
     def add_minute(self) -> Self:
         return self.add_minutes(1)
 
-    def subtract_minutes(self, value: int) -> Self:
+    def subtract_minutes(self, value: int | float) -> Self:
         return self - timedelta(minutes=value)
 
     def subtract_minute(self) -> Self:
@@ -151,13 +151,13 @@ class PyDateTime(datetime, PyDate):
 
     set_seconds = set_second
 
-    def add_seconds(self, value: int) -> Self:
+    def add_seconds(self, value: int | float) -> Self:
         return self + timedelta(seconds=value)
 
     def add_second(self) -> Self:
         return self.add_seconds(1)
 
-    def subtract_seconds(self, value: int) -> Self:
+    def subtract_seconds(self, value: int | float) -> Self:
         return self - timedelta(seconds=value)
 
     def subtract_second(self) -> Self:
@@ -168,13 +168,13 @@ class PyDateTime(datetime, PyDate):
 
     set_microseconds = set_microsecond
 
-    def add_microseconds(self, value: int) -> Self:
+    def add_microseconds(self, value: int | float) -> Self:
         return self + timedelta(microseconds=value)
 
     def add_microsecond(self) -> Self:
         return self.add_microseconds(1)
 
-    def subtract_microseconds(self, value: int) -> Self:
+    def subtract_microseconds(self, value: int | float) -> Self:
         return self - timedelta(microseconds=value)
 
     def subtract_microsecond(self) -> Self:
@@ -238,15 +238,15 @@ class PyDateTime(datetime, PyDate):
 
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart | TimePart, int]:
-    arg1 = _int_or_date_time_part(arg1)
-    arg2 = _int_or_date_time_part(arg2)
+    arg1 = _number_or_date_time_part(arg1)
+    arg2 = _number_or_date_time_part(arg2)
     key = value = None
-    if isinstance(arg1, int):
+    if isinstance(arg1, (int, float)):
         value = arg1
     elif isinstance(arg1, (DatePart, TimePart)):
         key = arg1
 
-    if isinstance(arg2, int):
+    if isinstance(arg2, (int, float)):
         value = arg2
     elif isinstance(arg2, (DatePart, TimePart)):
         key = arg2
@@ -256,7 +256,7 @@ def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart
     return key, value
 
 
-def _int_or_date_time_part(arg: CommonArg) -> int | DatePart | TimePart:
+def _number_or_date_time_part(arg: CommonArg) -> int | float | DatePart | TimePart:
     if isinstance(arg, str):
         return DatePart.get_item(arg) or TimePart.get_item(arg)
     return arg
