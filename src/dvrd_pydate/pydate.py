@@ -12,7 +12,7 @@ CommonArg: TypeAlias = int | float | str | DatePart | TimePart
 
 class PyDate(date):
     @staticmethod
-    def from_value(value: date | str | int = None) -> "PyDate":
+    def from_value(value: date | str | int | float = None) -> "PyDate":
         return PyDate(value)
 
     @staticmethod
@@ -59,7 +59,7 @@ class PyDate(date):
                 return PyDate.fromisoformat(args[0])
             elif isinstance(arg, date):
                 return date.__new__(cls, arg.year, arg.month, arg.day)
-            elif isinstance(arg, int):
+            elif isinstance(arg, (int, float)):
                 return date.fromtimestamp(arg)
         if not args and not kwargs:
             now = date.today()

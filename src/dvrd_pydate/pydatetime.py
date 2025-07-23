@@ -23,7 +23,7 @@ class PyDateTime(datetime, PyDate):
                                         arg.microsecond, arg.tzinfo, fold=arg.fold)
             elif isinstance(arg, date):
                 return datetime.__new__(cls, arg.year, arg.month, arg.day)
-            elif isinstance(arg, int):
+            elif isinstance(arg, (int, float)):
                 return datetime.fromtimestamp(arg)
         elif len(args) == 2:
             arg_1 = args[0]
@@ -37,7 +37,7 @@ class PyDateTime(datetime, PyDate):
         return datetime.__new__(cls, *args, **kwargs)
 
     @staticmethod
-    def from_value(value: datetime | date | str | int = None) -> "PyDateTime":
+    def from_value(value: datetime | date | str | int | float = None) -> "PyDateTime":
         return PyDateTime(value)
 
     @staticmethod
