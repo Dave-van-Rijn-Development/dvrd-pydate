@@ -60,7 +60,7 @@ class PyDate(date):
             elif isinstance(arg, date):
                 return date.__new__(cls, arg.year, arg.month, arg.day)
             elif isinstance(arg, (int, float)):
-                return date.fromtimestamp(arg)
+                return PyDate.fromtimestamp(arg)
         if not args and not kwargs:
             now = date.today()
             return date.__new__(cls, now.year, now.month, now.day)

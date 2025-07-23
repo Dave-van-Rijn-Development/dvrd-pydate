@@ -24,7 +24,7 @@ class PyDateTime(datetime, PyDate):
             elif isinstance(arg, date):
                 return datetime.__new__(cls, arg.year, arg.month, arg.day)
             elif isinstance(arg, (int, float)):
-                return datetime.fromtimestamp(arg)
+                return PyDateTime.fromtimestamp(arg)
         elif len(args) == 2:
             arg_1 = args[0]
             arg_2 = args[1]
