@@ -12,12 +12,8 @@ CommonArg: TypeAlias = int | float | str | DatePart | TimePart
 
 class PyDate(date):
     @staticmethod
-    def from_value(value: date | str = None) -> "PyDate":
-        if isinstance(value, str):
-            value = date.fromisoformat(value)
-        elif value is None:
-            value = date.today()
-        return PyDate(value.year, value.month, value.day)
+    def from_value(value: date | str | int = None) -> "PyDate":
+        return PyDate(value)
 
     @staticmethod
     def parse_date(*, value: str, fmt: str) -> "PyDate":
@@ -26,7 +22,8 @@ class PyDate(date):
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
-             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
+             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY,
+             max_steps: int = None) -> \
             Generator["PyDate", None, None]:
         if max_steps == 0:
             # Raises StopIteration
@@ -62,6 +59,8 @@ class PyDate(date):
                 return PyDate.fromisoformat(args[0])
             elif isinstance(arg, date):
                 return date.__new__(cls, arg.year, arg.month, arg.day)
+            elif isinstance(arg, int):
+                return date.fromtimestamp(arg)
         if not args and not kwargs:
             now = date.today()
             return date.__new__(cls, now.year, now.month, now.day)

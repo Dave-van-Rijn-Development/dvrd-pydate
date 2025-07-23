@@ -23,6 +23,8 @@ class PyDateTime(datetime, PyDate):
                                         arg.microsecond, arg.tzinfo, fold=arg.fold)
             elif isinstance(arg, date):
                 return datetime.__new__(cls, arg.year, arg.month, arg.day)
+            elif isinstance(arg, int):
+                return datetime.fromtimestamp(arg)
         elif len(args) == 2:
             arg_1 = args[0]
             arg_2 = args[1]
@@ -35,19 +37,13 @@ class PyDateTime(datetime, PyDate):
         return datetime.__new__(cls, *args, **kwargs)
 
     @staticmethod
-    def from_value(value: datetime | date | str = None) -> "PyDateTime":
-        if isinstance(value, str):
-            value = datetime.fromisoformat(value)
-        elif isinstance(value, date) and not isinstance(value, datetime):
-            value = datetime.combine(value, datetime.now().time())
-        elif value is None:
-            value = datetime.now()
-        return PyDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second,
-                          value.microsecond, value.tzinfo, fold=value.fold)
+    def from_value(value: datetime | date | str | int = None) -> "PyDateTime":
+        return PyDateTime(value)
 
     @staticmethod
     def iter(*, start: date | str = None, end: date | str | None = None,
-             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY, max_steps: int = None) -> \
+             step: DatePart | TimePart | tuple[int | float, DatePart | TimePart] = DatePart.DAY,
+             max_steps: int = None) -> \
             Generator["PyDateTime", None, None]:
         if max_steps == 0:
             # Raises StopIteration
