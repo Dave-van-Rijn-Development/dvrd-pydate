@@ -209,25 +209,50 @@ class PyDateTime(datetime, PyDate):
             raise KeyError(f'Unsupported end_of part {part}')
 
     def is_before(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
-        return super().is_before(other=other, granularity=granularity)
+        if not isinstance(other, PyDateTime):
+            other = PyDateTime.from_value(other)
+        return self.start_of(granularity) < other.start_of(granularity)
 
     def is_same_or_before(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
-        return super().is_same_or_before(other=other, granularity=granularity)
+        if not isinstance(other, PyDateTime):
+            other = PyDateTime(other)
+        return self.start_of(granularity) <= other.start_of(granularity)
 
     def is_same(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
-        return super().is_same(other=other, granularity=granularity)
+        if not isinstance(other, PyDateTime):
+            other = PyDateTime(other)
+        return self.start_of(granularity) == other.start_of(granularity)
 
     def is_same_or_after(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
-        return super().is_same_or_after(other=other, granularity=granularity)
+        if not isinstance(other, PyDateTime):
+            other = PyDateTime.from_value(other)
+        return self.start_of(granularity) >= other.start_of(granularity)
 
     def is_after(self, other: datetime | str, granularity: DatePart | TimePart = TimePart.MICROSECOND) -> bool:
-        return super().is_after(other=other, granularity=granularity)
+        if not isinstance(other, PyDateTime):
+            other = PyDateTime.from_value(other)
+        return self.start_of(granularity) > other.start_of(granularity)
 
     def is_between(self, other1: date | str, other2: date | str, *,
                    granularity: DatePart | TimePart = TimePart.MICROSECOND,
                    from_inclusive: bool = True, to_inclusive: bool = True) -> bool:
-        return super().is_between(other1=other1, other2=other2, granularity=granularity, from_inclusive=from_inclusive,
-                                  to_inclusive=to_inclusive)
+        if not isinstance(other1, PyDateTime):
+            other1 = PyDateTime.from_value(other1)
+        if not isinstance(other2, PyDateTime):
+            other2 = PyDateTime.from_value(other2)
+        from_date = min(other1, other2)
+        to_date = max(other1, other2)
+        if from_inclusive:
+            if not self.is_same_or_after(from_date, granularity):
+                return False
+        elif not self.is_after(from_date, granularity):
+            return False
+        if to_inclusive:
+            if not self.is_same_or_before(to_date, granularity):
+                return False
+        elif not self.is_before(to_date, granularity):
+            return False
+        return True
 
     def py_date(self) -> PyDate:
         return PyDate(self.year, self.month, self.day)
