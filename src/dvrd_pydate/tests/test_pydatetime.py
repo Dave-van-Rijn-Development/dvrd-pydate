@@ -187,12 +187,17 @@ class TestPyDateTime(unittest.TestCase):
         end_of = PyDateTime.from_value(now)
 
         # Date part
-        expected = now.replace(month=12, day=31)
+        expected = now.replace(month=12, day=31, hour=23, minute=59, second=59, microsecond=999)
         self.assertEqual(expected, end_of.end_of(DatePart.YEAR))
 
         # Day
         expected = now.replace(hour=23, minute=59, second=59, microsecond=999)
         self.assertEqual(expected, end_of.end_of(DatePart.DAY))
+
+        # Week
+        expect_datetime = datetime.fromisoformat('2025-10-05 23:59:59').replace(microsecond=999)
+        py_datetime = PyDateTime('2025-09-29 00:00:00').end_of(DatePart.WEEK)
+        self.assertEqual(expect_datetime, py_datetime)
 
         # Hour
         expected = now.replace(minute=59, second=59, microsecond=999)

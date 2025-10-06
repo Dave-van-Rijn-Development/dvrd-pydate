@@ -203,8 +203,8 @@ class TestPyDate(unittest.TestCase):
         start_of = test_date.start_of(DatePart.MONTH)
         self.assertTupleEqual((start_of.month, start_of.day), (date.today().month, 1))
 
-        test_date = PyDate.fromisoformat('2024-11-24')  # Sunday
-        self.assertEqual(date(2024, 11, 18), test_date.start_of(DatePart.WEEK))
+        test_date = PyDate.fromisoformat('2025-10-03')  # Sunday
+        self.assertEqual(date(2025, 9, 29), test_date.start_of(DatePart.WEEK))
 
         self.assertIs(test_date, test_date.start_of(DatePart.DAY))
         self.assertRaises(KeyError, test_date.start_of, TimePart.HOURS)
@@ -224,9 +224,21 @@ class TestPyDate(unittest.TestCase):
         self.assertTupleEqual((end_of.month, end_of.day), (today.month, max_date))
 
         # Week
-        test_date = PyDate.fromisoformat('2024-11-20')  # Wednesday
+        test_date = PyDate.fromisoformat('2025-09-29')  # Monday
         end_of = test_date.end_of(DatePart.WEEK)
-        self.assertEqual(date(2024, 11, 24), end_of)
+        self.assertEqual(date(2025, 10, 5), end_of)
+
+        test_date = PyDate.fromisoformat('2025-09-30')  # Tuesday
+        end_of = test_date.end_of(DatePart.WEEK)
+        self.assertEqual(date(2025, 10, 5), end_of)
+
+        test_date = PyDate.fromisoformat('2025-10-03')  # Friday
+        end_of = test_date.end_of(DatePart.WEEK)
+        self.assertEqual(date(2025, 10, 5), end_of)
+
+        test_date = PyDate.fromisoformat('2025-10-05')  # Sunday
+        end_of = test_date.end_of(DatePart.WEEK)
+        self.assertEqual(date(2025, 10, 5), end_of)
 
         self.assertIs(test_date, test_date.end_of(DatePart.DAY))
         self.assertRaises(KeyError, test_date.end_of, TimePart.HOURS)

@@ -198,7 +198,7 @@ class PyDate(date):
             return self.replace(day=1)
         elif part in [DatePart.WEEK, DatePart.WEEKS]:
             current_weekday = self.weekday()
-            return self.replace(day=self.day - current_weekday)
+            return self.subtract_days(current_weekday)
         elif part in [DatePart.DAY, DatePart.DAYS]:
             return self
         else:
@@ -213,7 +213,9 @@ class PyDate(date):
             return self.replace(day=self.max_day)
         elif part in [DatePart.WEEK, DatePart.WEEKS]:
             current_day = self.weekday()
-            return self.replace(day=self.day + 6 - current_day)
+            sunday = 6
+            return self.add_days(sunday - current_day)
+            # return self.replace(day=self.day + 6 - current_day)
         elif part in [DatePart.DAY, DatePart.DAYS]:
             return self
         else:

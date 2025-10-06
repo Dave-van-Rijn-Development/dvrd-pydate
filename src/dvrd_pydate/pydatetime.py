@@ -194,9 +194,7 @@ class PyDateTime(datetime, PyDate):
 
     def end_of(self, part: DatePart | TimePart) -> Self:
         if isinstance(part, DatePart):
-            if part in [DatePart.DAY, DatePart.DAYS]:
-                return self.replace(hour=23, minute=59, second=59, microsecond=999)
-            return super().end_of(part)
+            return super().end_of(part).py_datetime().replace(hour=23, minute=59, second=59, microsecond=999)
         elif part in [TimePart.HOUR, TimePart.HOURS]:
             return self.replace(minute=59, second=59, microsecond=999)
         elif part in [TimePart.MINUTE, TimePart.MINUTES]:
