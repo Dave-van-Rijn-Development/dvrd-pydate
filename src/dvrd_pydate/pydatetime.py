@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta, date
 from typing import Self, Generator
 
@@ -251,6 +252,29 @@ class PyDateTime(datetime, PyDate):
         elif not self.is_before(to_date, granularity):
             return False
         return True
+
+    def diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
+        diff_seconds = (self - other).total_seconds()
+        if isinstance(granularity, DatePart):
+            return super().diff(other, granularity=granularity)
+        if granularity in (TimePart.MICROSECOND, TimePart.MICROSECONDS):
+            return diff_seconds * 1000
+        elif granularity in (TimePart.SECOND, TimePart.SECONDS):
+            return diff_seconds
+        elif granularity in (TimePart.MINUTE, TimePart.MINUTES):
+            return diff_seconds / 60
+        elif granularity in (TimePart.HOUR, TimePart.HOURS):
+            return diff_seconds / 3600
+
+    def abs_diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
+        return abs(self.diff(other, granularity=granularity))
+
+    def rounded_diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS,
+                     round_method: Literal['floor', 'ceil'] = 'floor') -> int:
+        diff = self.diff(other, granularity=granularity)
+        if round_method == 'floor':
+            return math.floor(diff)
+        return math.ceil(diff)
 
     def py_date(self) -> PyDate:
         return PyDate(self.year, self.month, self.day)

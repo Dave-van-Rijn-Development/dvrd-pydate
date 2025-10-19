@@ -266,6 +266,25 @@ class PyDate(date):
             return False
         return True
 
+    def diff(self, other: PyDateTime, *, granularity: DatePart = DatePart.DAYS) -> float:
+        diff_seconds = (self - other).total_seconds()
+        if granularity in (DatePart.DAY, DatePart.DAYS):
+            return diff_seconds / 86400
+        elif granularity in (DatePart.WEEK, DatePart.WEEKS):
+            return diff_seconds / 604800
+        else:
+            raise KeyError('Cannot determine accurate diff for granularity bigger than WEEK')
+
+    def abs_diff(self, other: PyDateTime, *, granularity: DatePart = DatePart.DAYS) -> float:
+        return abs(self.diff(other, granularity=granularity))
+
+    def rounded_diff(self, other: PyDateTime, *, granularity: DatePart = DatePart.DAYS,
+                     round_method: Literal['floor', 'ceil'] = 'floor') -> int:
+        diff = self.diff(other, granularity=granularity)
+        if round_method == 'floor':
+            return math.floor(diff)
+        return math.ceil(diff)
+
     def py_datetime(self):
         from dvrd_pydate.pydatetime import PyDateTime
         return PyDateTime(self.year, self.month, self.day)

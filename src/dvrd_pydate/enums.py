@@ -8,14 +8,14 @@ class BaseEnum(Enum):
 
 
 class DatePart(BaseEnum):
-    YEAR = 'year'
-    YEARS = 'years'
-    MONTH = 'month'
-    MONTHS = 'months'
     DAY = 'day'
     DAYS = 'days'
     WEEK = 'week'
     WEEKS = 'weeks'
+    MONTH = 'month'
+    MONTHS = 'months'
+    YEAR = 'year'
+    YEARS = 'years'
 
 
 class TimePart(BaseEnum):
