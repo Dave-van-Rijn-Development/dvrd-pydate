@@ -1,6 +1,6 @@
 import math
 from datetime import datetime, timedelta, date
-from typing import Self, Generator
+from typing import Self, Generator, Literal
 
 from dvrd_pydate.enums import DatePart, TimePart
 from dvrd_pydate.pydate import PyDate, CommonArg
@@ -254,6 +254,7 @@ class PyDateTime(datetime, PyDate):
         return True
 
     def diff(self, other: datetime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
+        other = PyDateTime(other)
         diff_seconds = (self - other).total_seconds()
         if isinstance(granularity, DatePart):
             return super().diff(other, granularity=granularity)
@@ -265,6 +266,7 @@ class PyDateTime(datetime, PyDate):
             return diff_seconds / 60
         elif granularity in (TimePart.HOUR, TimePart.HOURS):
             return diff_seconds / 3600
+        return -1
 
     def abs_diff(self, other: datetime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
         return abs(self.diff(other, granularity=granularity))

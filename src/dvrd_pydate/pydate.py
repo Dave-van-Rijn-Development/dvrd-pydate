@@ -1,6 +1,7 @@
+import math
 from calendar import monthrange
 from datetime import date, timedelta, datetime
-from typing import Self, Generator, TypeAlias
+from typing import Self, Generator, TypeAlias, Literal
 
 from dvrd_pydate.enums import DatePart, TimePart
 
@@ -267,6 +268,7 @@ class PyDate(date):
         return True
 
     def diff(self, other: date, *, granularity: DatePart = DatePart.DAYS) -> float:
+        other = PyDate(other)
         diff_seconds = (self - other).total_seconds()
         if granularity in (DatePart.DAY, DatePart.DAYS):
             return diff_seconds / 86400
