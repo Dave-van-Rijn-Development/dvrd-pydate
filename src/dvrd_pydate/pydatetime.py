@@ -253,7 +253,7 @@ class PyDateTime(datetime, PyDate):
             return False
         return True
 
-    def diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
+    def diff(self, other: datetime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
         diff_seconds = (self - other).total_seconds()
         if isinstance(granularity, DatePart):
             return super().diff(other, granularity=granularity)
@@ -266,10 +266,10 @@ class PyDateTime(datetime, PyDate):
         elif granularity in (TimePart.HOUR, TimePart.HOURS):
             return diff_seconds / 3600
 
-    def abs_diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
+    def abs_diff(self, other: datetime, *, granularity: DatePart | TimePart = TimePart.SECONDS) -> float:
         return abs(self.diff(other, granularity=granularity))
 
-    def rounded_diff(self, other: PyDateTime, *, granularity: DatePart | TimePart = TimePart.SECONDS,
+    def rounded_diff(self, other: datetime, *, granularity: DatePart | TimePart = TimePart.SECONDS,
                      round_method: Literal['floor', 'ceil'] = 'floor') -> int:
         diff = self.diff(other, granularity=granularity)
         if round_method == 'floor':
