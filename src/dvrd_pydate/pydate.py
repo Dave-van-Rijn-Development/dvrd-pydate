@@ -1,6 +1,6 @@
 import math
 from calendar import monthrange
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta, datetime, tzinfo
 from typing import Self, Generator, TypeAlias, Literal
 
 from dvrd_pydate.enums import DatePart, TimePart
@@ -287,9 +287,11 @@ class PyDate(date):
             return math.floor(diff)
         return math.ceil(diff)
 
-    def py_datetime(self):
+    def py_datetime(self, *, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0,
+                    zone_info: tzinfo = None):
         from dvrd_pydate.pydatetime import PyDateTime
-        return PyDateTime(self.year, self.month, self.day)
+        return PyDateTime(self.year, self.month, self.day, hour=hour, minute=minute, second=second,
+                          microsecond=microsecond, tzinfo=zone_info)
 
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart, int]:
