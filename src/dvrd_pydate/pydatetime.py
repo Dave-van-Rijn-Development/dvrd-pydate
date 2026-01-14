@@ -83,6 +83,8 @@ class PyDateTime(datetime, PyDate):
 
     def add(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
         key, value = _determine_key_and_value(value_or_key, key_or_value)
+        if value < 0:
+            return self.subtract(key, -value)
         match key:
             case key if isinstance(key, DatePart):
                 return super().add(value, key)
@@ -97,6 +99,8 @@ class PyDateTime(datetime, PyDate):
 
     def subtract(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
         key, value = _determine_key_and_value(value_or_key, key_or_value)
+        if value < 0:
+            return self.add(key, -value)
         match key:
             case key if isinstance(key, DatePart):
                 return super().subtract(value, key)
@@ -115,12 +119,16 @@ class PyDateTime(datetime, PyDate):
     set_hours = set_hour
 
     def add_hours(self, value: int | float) -> Self:
+        if value < 0:
+            return self.subtract_hours(-value)
         return self + timedelta(hours=value)
 
     def add_hour(self) -> Self:
         return self.add_hours(1)
 
     def subtract_hours(self, value: int | float) -> Self:
+        if value < 0:
+            return self.add_hours(-value)
         return self - timedelta(hours=value)
 
     def subtract_hour(self) -> Self:
@@ -132,12 +140,16 @@ class PyDateTime(datetime, PyDate):
     set_minutes = set_minute
 
     def add_minutes(self, value: int | float) -> Self:
+        if value < 0:
+            return self.subtract_minutes(-value)
         return self + timedelta(minutes=value)
 
     def add_minute(self) -> Self:
         return self.add_minutes(1)
 
     def subtract_minutes(self, value: int | float) -> Self:
+        if value < 0:
+            return self.add_minutes(-value)
         return self - timedelta(minutes=value)
 
     def subtract_minute(self) -> Self:
@@ -149,12 +161,16 @@ class PyDateTime(datetime, PyDate):
     set_seconds = set_second
 
     def add_seconds(self, value: int | float) -> Self:
+        if value < 0:
+            return self.subtract_seconds(-value)
         return self + timedelta(seconds=value)
 
     def add_second(self) -> Self:
         return self.add_seconds(1)
 
     def subtract_seconds(self, value: int | float) -> Self:
+        if value < 0:
+            return self.add_seconds(-value)
         return self - timedelta(seconds=value)
 
     def subtract_second(self) -> Self:
@@ -166,12 +182,16 @@ class PyDateTime(datetime, PyDate):
     set_microseconds = set_microsecond
 
     def add_microseconds(self, value: int | float) -> Self:
+        if value < 0:
+            return self.subtract_microseconds(-value)
         return self + timedelta(microseconds=value)
 
     def add_microsecond(self) -> Self:
         return self.add_microseconds(1)
 
     def subtract_microseconds(self, value: int | float) -> Self:
+        if value < 0:
+            return self.add_microseconds(-value)
         return self - timedelta(microseconds=value)
 
     def subtract_microsecond(self) -> Self:

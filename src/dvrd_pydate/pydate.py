@@ -83,6 +83,8 @@ class PyDate(date):
 
     def add(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
         key, value = _determine_key_and_value(value_or_key, key_or_value)
+        if value < 0:
+            return self.subtract(key, -value)
         match key:
             case DatePart.YEARS | DatePart.YEAR:
                 return self.add_years(value)
@@ -95,6 +97,8 @@ class PyDate(date):
 
     def subtract(self, value_or_key: CommonArg, key_or_value: CommonArg) -> Self:
         key, value = _determine_key_and_value(value_or_key, key_or_value)
+        if value < 0:
+            return self.add(key, -value)
         match key:
             case DatePart.YEARS | DatePart.YEAR:
                 return self.subtract_years(value)
@@ -111,12 +115,16 @@ class PyDate(date):
     set_years = set_year
 
     def add_years(self, value: int) -> Self:
+        if value < 0:
+            return self.subtract_years(-value)
         return self.replace(year=self.year + value)
 
     def add_year(self) -> Self:
         return self.add_years(1)
 
     def subtract_years(self, value: int) -> Self:
+        if value < 0:
+            return self.add_years(-value)
         return self.replace(year=self.year - value)
 
     def subtract_year(self) -> Self:
@@ -133,6 +141,8 @@ class PyDate(date):
     set_months = set_month
 
     def add_months(self, value: int) -> Self:
+        if value < 0:
+            return self.subtract_months(-value)
         new_date = self.clone()
         add_years, month_value = divmod(new_date.month + value, months_in_year + 1)
         if add_years:
@@ -145,6 +155,8 @@ class PyDate(date):
         return self.add_months(1)
 
     def subtract_months(self, value: int) -> Self:
+        if value < 0:
+            return self.add_months(-value)
         new_date = self.clone()
         subtract_years, remaining_months = divmod(value, months_in_year)
         if subtract_years:
@@ -159,12 +171,16 @@ class PyDate(date):
         return self.subtract_months(1)
 
     def add_weeks(self, value: int) -> Self:
+        if value < 0:
+            return self.subtract_weeks(-value)
         return self + timedelta(weeks=value)
 
     def add_week(self) -> Self:
         return self.add_weeks(1)
 
     def subtract_weeks(self, value: int) -> Self:
+        if value < 0:
+            return self.add_weeks(-value)
         return self - timedelta(weeks=value)
 
     def subtract_week(self) -> Self:
@@ -176,12 +192,16 @@ class PyDate(date):
     set_days = set_day
 
     def add_days(self, value: int) -> Self:
+        if value < 0:
+            return self.subtract_days(-value)
         return self + timedelta(days=value)
 
     def add_day(self) -> Self:
         return self.add_days(1)
 
     def subtract_days(self, value: int) -> Self:
+        if value < 0:
+            return self.add_days(-value)
         return self - timedelta(days=value)
 
     def subtract_day(self) -> Self:
