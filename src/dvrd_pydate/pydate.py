@@ -1,9 +1,12 @@
 import math
 from calendar import monthrange
 from datetime import date, timedelta, datetime, tzinfo
-from typing import Self, Generator, TypeAlias, Literal
+from typing import Self, Generator, TypeAlias, Literal, Any, TYPE_CHECKING
 
 from dvrd_pydate.enums import DatePart, TimePart
+
+if TYPE_CHECKING:
+    from pydantic_core import CoreSchema, GetCoreSchemaHandler
 
 days_in_week = 7
 months_in_year = 12
@@ -62,6 +65,10 @@ class PyDate(date):
                 return date.__new__(cls, arg.year, arg.month, arg.day)
             elif isinstance(arg, (int, float)):
                 return PyDate.fromtimestamp(arg)
+            elif isinstance(arg, tuple):
+                if len(arg) < 3:
+                    arg = (*arg, *([1] * (3 - len(arg))))
+                return date.__new__(cls, *arg)
         if not args and not kwargs:
             now = date.today()
             return date.__new__(cls, now.year, now.month, now.day)
@@ -312,6 +319,36 @@ class PyDate(date):
         from dvrd_pydate.pydatetime import PyDateTime
         return PyDateTime(self.year, self.month, self.day, hour=hour, minute=minute, second=second,
                           microsecond=microsecond, tzinfo=zone_info)
+
+    # Pydantic
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: "GetCoreSchemaHandler") -> "CoreSchema":
+        from pydantic_core import core_schema
+
+        def serialize(value: Any):
+            if isinstance(value, cls):
+                return value.isoformat()
+            return value
+
+        def validate(value: Any):
+            return cls(value)
+
+        schema = core_schema.union_schema([
+            core_schema.is_instance_schema(cls),
+            core_schema.str_schema(),
+            core_schema.int_schema(),
+            core_schema.date_schema(),
+            core_schema.datetime_schema(),
+            # Date(time) tuples
+            core_schema.tuple_schema([core_schema.int_schema()], min_length=1, max_length=7, variadic_item_index=0),
+        ])
+        return core_schema.no_info_after_validator_function(
+            validate,
+            schema,
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                serialize, when_used='json'
+            )
+        )
 
 
 def _determine_key_and_value(arg1: CommonArg, arg2: CommonArg) -> tuple[DatePart, int]:

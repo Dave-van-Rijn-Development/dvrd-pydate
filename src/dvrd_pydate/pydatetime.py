@@ -26,6 +26,10 @@ class PyDateTime(datetime, PyDate):
                 return datetime.__new__(cls, arg.year, arg.month, arg.day)
             elif isinstance(arg, (int, float)):
                 return PyDateTime.fromtimestamp(arg)
+            elif isinstance(arg, tuple):
+                if len(arg) < 7:
+                    arg = (*arg, *([0] * (7 - len(arg))))
+                return datetime.__new__(cls, *arg)
         elif len(args) == 2:
             arg_1 = args[0]
             arg_2 = args[1]

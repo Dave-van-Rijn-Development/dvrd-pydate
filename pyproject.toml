@@ -1,6 +1,6 @@
 [project]
 name = "dvrd_pydate"
-version = "1.1.18"
+version = "1.1.19"
 description = "Python date and datetime extension"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -10,6 +10,9 @@ authors = [{ name = "Dave van Rijn Development", email = "develop@davevanrijn.nl
 Homepage = "https://github.com/Dave-van-Rijn-Development/dvrd-pydate.git"
 
 [project.optional-dependencies]
+pydantic = [
+    'pydantic_core'
+]
 test = [
     'coverage'
 ]
