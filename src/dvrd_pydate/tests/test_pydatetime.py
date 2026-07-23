@@ -160,7 +160,7 @@ class TestPyDateTime(unittest.TestCase):
         start_of = PyDateTime.from_value(now)
 
         # Date part
-        expected = now.replace(month=1, day=1)
+        expected = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         self.assertEqual(expected, start_of.start_of(DatePart.YEAR))
 
         # Day

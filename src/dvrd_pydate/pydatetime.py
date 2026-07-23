@@ -203,9 +203,7 @@ class PyDateTime(datetime, PyDate):
 
     def start_of(self, part: DatePart | TimePart) -> Self:
         if isinstance(part, DatePart):
-            if part in [DatePart.DAY, DatePart.DAYS]:
-                return self.replace(hour=0, minute=0, second=0, microsecond=0)
-            return super().start_of(part)
+            return super().start_of(part).py_datetime().replace(hour=0, minute=0, second=0, microsecond=0)
         elif part in [TimePart.HOUR, TimePart.HOURS]:
             return self.replace(minute=0, second=0, microsecond=0)
         elif part in [TimePart.MINUTE, TimePart.MINUTES]:
